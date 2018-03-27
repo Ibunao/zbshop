@@ -2,6 +2,7 @@
 $db = array_merge(
     require __DIR__ . '/db-local.php'
 );
+
 return [
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
