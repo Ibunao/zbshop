@@ -1,8 +1,8 @@
 <?php
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=127.0.0.1;dbname=zbshop',
-    'username' => 'root',
-    'password' => '123456',
+    'dsn' => 'mysql:host=118.25.38.240;dbname=zbshop',
+    'username' => 'zbshop',
+    'password' => '888888',
     'charset' => 'utf8',
 ];

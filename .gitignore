@@ -31,6 +31,9 @@ phpunit.phar
 # local phpunit config
 /phpunit.xml
 
+
+common/config/db-local.php
 # vagrant runtime
 /.vagrant
-common/config/db-local.php
+
+
