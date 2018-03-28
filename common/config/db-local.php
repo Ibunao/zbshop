@@ -5,4 +5,5 @@ return [
     'username' => 'zbshop',
     'password' => '888888',
     'charset' => 'utf8',
+    'tablePrefix' => 'shop_'
 ];

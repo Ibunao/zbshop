@@ -6,23 +6,23 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'app-api',
+    'id' => 'app-wechats',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
-    'controllerNamespace' => 'api\controllers',
+    'controllerNamespace' => 'wechat\controllers',
     'components' => [
         'request' => [
-            'csrfParam' => '_csrf-api',
-            'cookieValidationKey' => 'adafdasfsadfas-api',
+            'csrfParam' => '_csrf-wechats',
+            'cookieValidationKey' => 'adafdasfsadfas-wechats',
         ],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
-            'identityCookie' => ['name' => '_identity-api', 'httpOnly' => true],
+            'identityCookie' => ['name' => '_identity-wechats', 'httpOnly' => true],
         ],
         'session' => [
-            // this is the name of the session cookie used for login on the api
-            'name' => 'advanced-api',
+            // this is the name of the session cookie used for login on the wechats
+            'name' => 'advanced-wechats',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,

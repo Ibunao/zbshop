@@ -37,3 +37,5 @@ common/config/db-local.php
 /.vagrant
 
 
+wechat/config/params.php
+sftp-config.json
