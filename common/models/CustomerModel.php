@@ -73,6 +73,7 @@ class CustomerModel extends \yii\db\ActiveRecord
     public function signup()
     {
         if (!$this->validate()) {
+            // var_dump($this->errors, $this->openid);
             return null;
         }
         $this->username;

@@ -7,6 +7,7 @@ use yii\web\Controller;
 use wechat\controllers\bases\BaseController;
 use wechat\helpers\WchatHelper;
 use common\models\CustomerModel;
+use yii\web\Cookie;
 /**
  * Site controller
  */
@@ -49,7 +50,7 @@ class SiteController extends BaseController
         $appId = Yii::$app->params['wxconfig']['zbshop']['app_id'];
         $state = 1; // 1 为正式
         // 回调地址
-        $redirect_uri = urlencode('http://wx.quutuu.com/signup');
+        $redirect_uri = urlencode('http://wx.quutuu.com/site/signup');
         $url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={$appId}&redirect_uri={$redirect_uri}&response_type=code&scope=snsapi_base&state={$state}#wechat_redirect";
         header("Location:".$url);
     }
@@ -59,11 +60,25 @@ class SiteController extends BaseController
      */
     public function actionSignup()
     {
-        // $openid = (new WchatHelper)->getOpenid();
-        $model = new CustomerModel();
+        $openid = (new WchatHelper)->getOpenid();
+        if (!empty($openid)) {
+            $model = (new CustomerModel())->find()
+                ->where(['openid' => $openid])
+                ->one();
+        }
+        if (!isset($model) || empty($model)) {
+            $model = new CustomerModel();
+        }
+        
         if (Yii::$app->request->isPost) {
             $model->load(Yii::$app->request->post());
+            $model->openid = $openid;
             if ($user = $model->signup()) {
+                // 把openid存入到cookie
+                $cookies = Yii::$app->response->cookies;
+                $cookie = new Cookie(['name' => 'customerId', 'value' => $user->id]);
+                $cookies->add($cookie);
+                $this->redirect('join-us');
                 // 暂时不写登陆功能
                 // if (Yii::$app->getUser()->login($user)) {
                     // return $this->redirect('/site/join-us');
@@ -81,6 +96,7 @@ class SiteController extends BaseController
      */
     public function actionJoinUs()
     {
-        
+        $customerId = Yii::$app->request->cookies->getValue('customerId');
+        return $this->render('jion');
     }
 }
