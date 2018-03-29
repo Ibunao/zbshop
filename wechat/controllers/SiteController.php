@@ -129,6 +129,9 @@ class SiteController extends BaseController
         if (empty($result)) {
             return ['code' => 400];
         }
+        $model = CustomerModel::findOne(['id' => $sceneId]);
+        $model->is_join = 1;
+        $model->save(false);
         return ['code' => 200, 'imgUrl' => Yii::$app->params['shareImagesUrl'].$sceneId.'.png'];
     }
     /**

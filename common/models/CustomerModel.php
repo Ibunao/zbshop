@@ -3,7 +3,7 @@
 namespace common\models;
 
 use Yii;
-
+use wechat\helpers\WchatHelper;
 /**
  * This is the model class for table "{{%customer}}".
  *
@@ -81,5 +81,44 @@ class CustomerModel extends \yii\db\ActiveRecord
         $this->password;
         $this->created_at = time();
         return $this->save() ? $this : null;
+    }
+    /**
+     * 关注的时候
+     * @param string $value [description]
+     */
+    public function Attention($sceneId, $openid, $check = false)
+    {
+        $success = false;
+        if ($check) {
+            $model = self::findOne([
+                'openid' => $openid,
+            ]);
+            if (!$model) {
+                $this->openid = $openid;
+                $this->created_at = time();
+                $this->share_id = $sceneId;
+                $result = $this->save(false);
+                if ($result) {
+                    $success = true;
+                }
+            }
+        }
+        $model = self::findOne([
+                'id' => $sceneId,
+            ]);
+        if (!$model) {
+            return;
+        }
+        $info['title'] = '恭喜，邀请成功!';
+        $info['content'] = '二维码邀请';
+        $info['remark'] = '恭喜你，距亿万富翁又近一步';
+        $info['openId'] = $model->openid;
+        $info['url'] = '';
+        if (!$success) {
+            $info['title'] = 'sorry, sorry, sorry';
+            $info['remark'] = '此用户已关注或曾关注过';
+        }
+        // 发送邀请成功通知。
+        (new WchatHelper)->sendShareMessage($info);
     }
 }

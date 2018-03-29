@@ -4,6 +4,7 @@ use Yii;
 use yii\base\Object;
 use wechat\helpers\HttpHelper;
 use yii\web\Cookie;
+use common\models\CustomerModel;
 /**
  * 微信辅助
  */
@@ -45,17 +46,9 @@ class WchatHelper extends Object
         //接收用户端发送过来的XML数据
         // $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
         $postStr = file_get_contents("php://input");
-        $postStr = "<xml><tousername><!--[CDATA[gh_c9271b9aca1d]]--></tousername>
-<fromusername><!--[CDATA[oCSMd0obtXDxrhvuExl0J14jzaSQ]]--></fromusername>
-<createtime>1522317590</createtime>
-<msgtype><!--[CDATA[event]]--></msgtype>
-<event><!--[CDATA[SCAN]]--></event>
-<eventkey><!--[CDATA[1]]--></eventkey>
-<ticket><!--[CDATA[gQFg8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyQ0xMUjBTOXpjdGkxMDAwMDAwM20AAgSHmLxaAwQAAAAA]]--></ticket>
-</xml>";
+        // file_put_contents(Yii::$app->params['shareImagesPath'].'wx.md', $postStr);
+        // $postStr = "<xml><URL><![CDATA[http://wx.quutuu.com]]></URL><ToUserName><![CDATA[adfasdafasdfadfas]]></ToUserName><FromUserName><![CDATA[afdadfasdfasdfasfasd]]></FromUserName><CreateTime>1111132323</CreateTime><MsgType><![CDATA[event]]></MsgType><Event><![CDATA[scan]]></Event><Latitude></Latitude><Longitude></Longitude><Precision></Precision><MsgId>121232323</MsgId></xml>";
 
-        // Yii::$app->cache->set('debug', $postStr);
-        //extract post data
         //判断XML数据是否为空
         if (!empty($postStr)){
             /* libxml_disable_entity_loader is to prevent XML eXternal Entity Injection,
@@ -66,7 +59,6 @@ class WchatHelper extends Object
             //手机端  发送方帐号（一个OpenID） 
             $this->fromUsername = $postObj->FromUserName;
             // 获取openid
-            // Yii::$app->cache->set('openid', (string)$this->fromUsername);
             //开发者微信号（公共号）
             $this->toUsername = $postObj->ToUserName;
             //接收用户发送的关键词
@@ -76,7 +68,6 @@ class WchatHelper extends Object
             $this->time = time();
             //接收用户消息类型
             $msgType = $postObj->MsgType;
-            var_dump($msgType, $postObj, $this->fromUsername, $this->toUsername);exit;
             switch ($msgType) {
                 //关注或取消关注是触发的事件消息类型
                 case 'event':
@@ -101,14 +92,25 @@ class WchatHelper extends Object
      */
     private function event()
     {
+
         $event = strtolower($this->postObj->Event);
         switch ($event) {
             case 'subscribe'://关注的时候
-                $this->sendText($this->postObj->EventKey);
+                $this->sendText('欢迎加入趣途文化！');
+                // 扫场景二维码进来的
+                if ($this->postObj->EventKey) {
+                    $index = strrpos($this->postObj->EventKey, '_');
+                    $sceneId = substr($this->postObj->EventKey, $index+1);
+                    (new CustomerModel)->Attention($sceneId, $this->fromUsername, true);
+                }
                 // $this->sendImageText();
                 break;
-            case 'SCAN'://关注的时候
-                $this->sendText($this->postObj->EventKey);
+            // 关注过扫码的情况
+            case 'scan':
+                // $this->sendText($this->postObj->EventKey);
+                if ($this->postObj->EventKey) {
+                    (new CustomerModel)->Attention($this->postObj->EventKey, $this->fromUsername);
+                }
                 // $this->sendImageText();
                 break;
             // 已关注用户扫描带场景的二维码
