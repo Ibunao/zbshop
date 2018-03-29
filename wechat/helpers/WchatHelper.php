@@ -43,9 +43,18 @@ class WchatHelper extends Object
     {
         //get post data, May be due to the different environments
         //接收用户端发送过来的XML数据
-        $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
+        // $postStr = $GLOBALS["HTTP_RAW_POST_DATA"];
+        $postStr = file_get_contents("php://input");
+        $postStr = "<xml><tousername><!--[CDATA[gh_c9271b9aca1d]]--></tousername>
+<fromusername><!--[CDATA[oCSMd0obtXDxrhvuExl0J14jzaSQ]]--></fromusername>
+<createtime>1522317590</createtime>
+<msgtype><!--[CDATA[event]]--></msgtype>
+<event><!--[CDATA[SCAN]]--></event>
+<eventkey><!--[CDATA[1]]--></eventkey>
+<ticket><!--[CDATA[gQFg8jwAAAAAAAAAAS5odHRwOi8vd2VpeGluLnFxLmNvbS9xLzAyQ0xMUjBTOXpjdGkxMDAwMDAwM20AAgSHmLxaAwQAAAAA]]--></ticket>
+</xml>";
 
-        // Yii::app()->cache->set('mendian', $postStr);
+        // Yii::$app->cache->set('debug', $postStr);
         //extract post data
         //判断XML数据是否为空
         if (!empty($postStr)){
@@ -67,7 +76,7 @@ class WchatHelper extends Object
             $this->time = time();
             //接收用户消息类型
             $msgType = $postObj->MsgType;
-            
+            var_dump($msgType, $postObj, $this->fromUsername, $this->toUsername);exit;
             switch ($msgType) {
                 //关注或取消关注是触发的事件消息类型
                 case 'event':
@@ -95,6 +104,10 @@ class WchatHelper extends Object
         $event = strtolower($this->postObj->Event);
         switch ($event) {
             case 'subscribe'://关注的时候
+                $this->sendText($this->postObj->EventKey);
+                // $this->sendImageText();
+                break;
+            case 'SCAN'://关注的时候
                 $this->sendText($this->postObj->EventKey);
                 // $this->sendImageText();
                 break;
@@ -180,11 +193,11 @@ class WchatHelper extends Object
     // 设定模板消息场景值
     public $scene = [
         // 关注通知
-        'gztz' => [
+        'share' => [
             'msg' => "",
             // 跳转的url
             'url' => '',
-            'templateId' => ''
+            'templateId' => 'gJVXL_hY1k4BSsW74cS-tC_CX1G5KwHzr257QaCOnbQ'
         ],
 
     ];
@@ -227,25 +240,25 @@ class WchatHelper extends Object
             $access_token = $json_data['access_token'];
             $result = Yii::$app->cache->set('wx_zhshop_access_token', $access_token, 7200);
         }
-        var_dump($access_token);
+        // var_dump($access_token);
         return $access_token ;
     }
     /**
-     * 发送微信消息
+     * 发送微信分享关注消息
      * @return [type] [description]
      */
-    public function sendPubMessage($info)
+    public function sendShareMessage($info)
     {
         $data = [];
 
         $data['first'] = ['value'=> $info['title'], 'color'=>"#173177"];
         $data['remark'] = ['value'=> $info['remark'], 'color'=>"#173177"];
         $url = $info['url'];
-        $templateId = $this->scene['pub']['templateId'][$info['scene']];
+        $templateId = $this->scene['share']['templateId'];
         // 内容
         $data['keyword1'] = ['value'=> $info['content'], 'color'=>"#173177"];
         // 时间
-        $data['keyword2'] = ['value'=> $info['time'], 'color'=>"#173177"];
+        $data['keyword2'] = ['value'=> date("Y-m-d H:i:s"), 'color'=>"#173177"];
         
         $token = $this->getToken();
 
@@ -411,7 +424,6 @@ class WchatHelper extends Object
                         [
                             'name'=>urlencode('加入我们'),
                             'type'=>'view',
-                            // 备用路径
                             'url'=>'http://wx.quutuu.com/site/get-openid',
                         ],
                     ]
@@ -420,7 +432,42 @@ class WchatHelper extends Object
         ];
         $postJson = urldecode(json_encode($postArr));
         var_dump($postJson);
-        $res = (new HttpHelper)->httpCurl($url, 'post', 'json', $postJson);
+        $res = HttpHelper::httpCurl($url, 'post', 'json', $postJson);
         var_dump($res);
     }
+    /**
+     * 获取场景二维码
+     * @param  string $value [description]
+     * @return [type]        [description]
+     */
+    public function getQuickMark($sceneId)
+    {
+        if (empty($sceneId)) {
+            return false;
+        }
+        // 如果已经下载过了
+        if (is_file(Yii::$app->params['shareImagesPath'].$sceneId.'.png')) {
+            return true;   
+        }
+        $token = $this->getToken();
+        $url = 'https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token='.$token;
+        $postArr = [
+            'action_name' => "QR_LIMIT_SCENE", 
+            "action_info" => [
+                "scene" => ["scene_id" => $sceneId]
+            ]
+        ];
+        $postJson = json_encode($postArr);
+        $result = HttpHelper::httpCurl($url, 'post', 'json', $postJson);
+        if (isset($result['ticket']) && !empty($result['ticket'])) {
+            $fileUrl = 'https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket='.$result['ticket'];
+            $content = file_get_contents($fileUrl);
+            $result = file_put_contents(Yii::$app->params['shareImagesPath'].$sceneId.'.png', $content);
+            if (!empty($result)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
 }

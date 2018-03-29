@@ -38,8 +38,9 @@ class SiteController extends BaseController
     public function actionIndex()
     {
         // 验证服务器
-        (new WchatHelper)->valid();
-        // return $this->render('index');
+        // (new WchatHelper)->valid();
+        // 消息回复
+        (new WchatHelper)->responseMsg();
     }
     /**
      * 已关注用户静默获取openid
@@ -47,6 +48,10 @@ class SiteController extends BaseController
      */
     public function actionGetOpenid()
     {
+        $openid = Yii::$app->request->cookies->getValue('openid');
+        if (!empty($openid)) {
+            $this->redirect('/site/signup');
+        }
         $appId = Yii::$app->params['wxconfig']['zbshop']['app_id'];
         $state = 1; // 1 为正式
         // 回调地址
@@ -60,7 +65,14 @@ class SiteController extends BaseController
      */
     public function actionSignup()
     {
+        // 如果已经
+        $customerId = Yii::$app->request->cookies->getValue('customerId');
+        if (!empty($customerId)) {
+            $this->redirect('/site/join-us');
+        }
+        // 获取openid
         $openid = (new WchatHelper)->getOpenid();
+        // 如果已经注册过，则为更新数据
         if (!empty($openid)) {
             $model = (new CustomerModel())->find()
                 ->where(['openid' => $openid])
@@ -78,7 +90,7 @@ class SiteController extends BaseController
                 $cookies = Yii::$app->response->cookies;
                 $cookie = new Cookie(['name' => 'customerId', 'value' => $user->id]);
                 $cookies->add($cookie);
-                $this->redirect('join-us');
+                $this->redirect('/site/join-us');
                 // 暂时不写登陆功能
                 // if (Yii::$app->getUser()->login($user)) {
                     // return $this->redirect('/site/join-us');
@@ -96,11 +108,52 @@ class SiteController extends BaseController
      */
     public function actionJoinUs()
     {
-        $customerId = Yii::$app->request->cookies->getValue('customerId');
-        return $this->render('jion');
+        $sceneId = Yii::$app->request->cookies->getValue('customerId');
+        $isJion = false;
+        $src = '';
+        if (is_file(Yii::$app->params['shareImagesPath'].$sceneId.'.png')) {
+            $isJion = true;
+            $src = Yii::$app->params['shareImagesUrl'].$sceneId.'.png';
+        }
+        return $this->render('jion', ['isJion' => $isJion, 'src' => $src]);
     }
+    /**
+     * 获取分享的图片
+     * @return [type] [description]
+     */
+    public function actionGetShareImage()
+    {
+        Yii::$app->response->format = 'json';
+        $sceneId = Yii::$app->request->cookies->getValue('customerId');
+        $result = (new WchatHelper)->getQuickMark($sceneId);
+        if (empty($result)) {
+            return ['code' => 400];
+        }
+        return ['code' => 200, 'imgUrl' => Yii::$app->params['shareImagesUrl'].$sceneId.'.png'];
+    }
+    /**
+     * 创建菜单
+     * @return [type] [description]
+     */
     public function actionMenu()
     {
         (new WchatHelper)->menu();
+    }
+
+    public function actionTest()
+    {
+        // echo Yii::$app->basePath;
+
+        // 发送模板消息
+        /*$info['title'] = '恭喜，邀请成功!';
+        $info['content'] = '二维码邀请';
+        $info['remark'] = '恭喜你，距亿万富翁又进一步';
+        $info['openId'] = 'oCSMd0obtXDxrhvuExl0J14jzaSQ';
+        $info['url'] = '';
+        (new WchatHelper)->sendShareMessage($info);*/
+
+        // 获取缓存
+        $cache = Yii::$app->cache->get('debug');
+        var_dump($cache);
     }
 }

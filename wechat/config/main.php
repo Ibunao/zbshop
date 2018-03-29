@@ -2,13 +2,17 @@
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
-    require __DIR__ . '/params.php'
+    require __DIR__ . '/params.php',
+    require __DIR__ . '/canseeparams.php'
 );
 
 return [
     'id' => 'app-wechats',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
+    'language' => 'zh-CN',
+    'name' => '趣途文化',
+    'timeZone' => 'Asia/Shanghai',
     'controllerNamespace' => 'wechat\controllers',
     'components' => [
         'request' => [
