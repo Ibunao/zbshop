@@ -3,6 +3,7 @@ namespace wechat\helpers;
 use Yii;
 use yii\base\Object;
 use wechat\helpers\HttpHelper;
+use yii\web\Cookie;
 /**
  * 微信辅助
  */
