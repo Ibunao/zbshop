@@ -222,11 +222,11 @@ class WchatHelper extends Object
         if(!$access_token){
             $access_token_url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.
                 $this->wxconfig['zbshop']['app_id'].'&secret='.$this->wxconfig['zbshop']['app_secret'];
-            $json_data = Helper::curlGet($access_token_url);
-            $json_data = json_decode($json_data,true);
+            $json_data = HttpHelper::httpCurl($access_token_url);
             $access_token = $json_data['access_token'];
-            Yii::$app->cache->set('wx_zhshop_access_token', $access_token, 7200);
+            $result = Yii::$app->cache->set('wx_zhshop_access_token', $access_token, 7200);
         }
+        var_dump($access_token);
         return $access_token ;
     }
     /**
@@ -322,5 +322,104 @@ class WchatHelper extends Object
             return $oauth2['openid'];
         }
         return $openid;
+    }
+    /**
+     * 创建目录
+     * @return [type] [description]
+     */
+    public function menu()
+    {
+        $token = $this->getToken();
+        $url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token={$token}";
+        //定义菜单   post请求参数
+        $postArr = [
+            'button'=>[
+                
+                // 第一个一级菜单，包含二级菜单
+                [
+                    'name'=>urlencode('冬夏令营'),
+                    //定义子菜单
+                    'sub_button'=>[
+                        [
+                            'name'=>urlencode('冬令营'),
+                            'type'=>'view',
+                            'url'=>'http://mp.weixin.qq.com/mp/homepage?__biz=MzUyNTEyNDg3Mw==&hid=2&sn=a45a16a04605609835762722a6cc1aaf&scene=18#wechat_redirect',
+                        ],
+                        // url跳转按钮
+                        [
+                            'name'=>urlencode('夏令营'),
+                            'type'=>'view',
+                            'url'=>'http://mp.weixin.qq.com/mp/homepage?__biz=MzUyNTEyNDg3Mw==&hid=3&sn=019c6ece583139ea3158b156513dbffe&scene=18#wechat_redirect',
+                        ],
+                        // 
+                        [
+                            'name'=>urlencode('城市定向赛'),
+                            'type'=>'view',
+                            'url'=>'http://mp.weixin.qq.com/mp/homepage?__biz=MzUyNTEyNDg3Mw==&hid=8&sn=ef01d265b2fe3e2d33af1e983f71f9aa#wechat_redirect',
+                        ],
+                    ]
+                ],
+                //第二个一级菜单
+                [
+                    'name'=>urlencode('冠赢扩展'),//这样防止转json中文会成\uxxx的形式
+                    //定义子菜单
+                    'sub_button'=>[
+                        [
+                            'name'=>urlencode('活动展示'),
+                            'type'=>'view',
+                            'url'=>'http://mp.weixin.qq.com/mp/homepage?__biz=MzUyNTEyNDg3Mw==&hid=4&sn=bc0dbc7ac4f2e4791a8514b4b9f21588&scene=18#wechat_redirect',
+                        ],
+                        // url跳转按钮
+                        [
+                            'name'=>urlencode('教练介绍'),
+                            'type'=>'view',
+                            'url'=>'http://mp.weixin.qq.com/mp/homepage?__biz=MzUyNTEyNDg3Mw==&hid=5&sn=9fc9a71e10f42087cd0a721c58842537&scene=18#wechat_redirect',
+                        ],
+                        // url跳转按钮
+                        [
+                            'name'=>urlencode('公司制定'),
+                            'type'=>'view',
+                            'url'=>'https://v.qq.com/x/page/x0546xexr9l.html',
+                        ],
+                    ]
+                ],
+                // 第三个一级菜单
+                [
+                    'name'=>urlencode('趣途文化'),
+                    //定义子菜单
+                    'sub_button'=>[
+                        [
+                            'name'=>urlencode('\\"趣\\"活动'),
+                            'type'=>'view',
+                            'url'=>'http://mp.weixin.qq.com/mp/homepage?__biz=MzUyNTEyNDg3Mw==&hid=6&sn=22c681745df89fb900739ae8b6c0d4d5&scene=18#wechat_redirect',
+                        ],
+                        // url跳转按钮
+                        [
+                            'name'=>urlencode('\\"趣\\"交友'),
+                            'type'=>'view',
+                            'url'=>'http://mp.weixin.qq.com/mp/homepage?__biz=MzUyNTEyNDg3Mw==&hid=7&sn=cf28b96c96a3fe527250d9f47b5cf2fe&scene=18#wechat_redirect',
+                        ],
+                        [
+                            'name'=>urlencode('\\"趣\\"商城'),
+                            'type'=>'miniprogram',
+                            // 备用路径
+                            'url'=>'http://mp.weixin.qq.com/bizmall/mallshelf?id=&t=mall/list&biz=MzUyNTEyNDg3Mw==&shelf_id=1&showwxpaytitle=1#wechat_redirect',
+                            "appid" => Yii::$app->params['xcxid'],
+                            "pagepath" => "pages/shelf/shelf",
+                        ],
+                        [
+                            'name'=>urlencode('加入我们'),
+                            'type'=>'view',
+                            // 备用路径
+                            'url'=>'http://wx.quutuu.com/site/get-openid',
+                        ],
+                    ]
+                ],
+            ]
+        ];
+        $postJson = urldecode(json_encode($postArr));
+        var_dump($postJson);
+        $res = (new HttpHelper)->httpCurl($url, 'post', 'json', $postJson);
+        var_dump($res);
     }
 }

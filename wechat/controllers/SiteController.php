@@ -83,4 +83,8 @@ class SiteController extends BaseController
     {
         
     }
+    public function actionMenu()
+    {
+        (new WchatHelper)->menu();
+    }
 }
