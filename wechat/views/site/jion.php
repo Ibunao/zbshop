@@ -10,7 +10,7 @@
 <b style="width:130px" class="center-block" >长按图片保存到本地</b>
 <?php else: ?>
 <div class="align-center">
-<button id="jionus" type="button" class="btn btn-primary center-block">加入我们</button>
+<button id="jionus" type="button" class="btn btn-primary center-block">申请专属邀请码</button>
 </div>
 <?php endif; ?>
 
