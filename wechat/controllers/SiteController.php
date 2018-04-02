@@ -7,6 +7,7 @@ use yii\web\Controller;
 use wechat\controllers\bases\BaseController;
 use wechat\helpers\WchatHelper;
 use common\models\CustomerModel;
+use common\models\AgentUserModel;
 use yii\web\Cookie;
 /**
  * Site controller
@@ -66,20 +67,20 @@ class SiteController extends BaseController
     public function actionSignup()
     {
         // 如果已经
-        $customerId = Yii::$app->request->cookies->getValue('customerId');
-        if (!empty($customerId)) {
+        $agentId = Yii::$app->request->cookies->getValue('agentId');
+        if (!empty($agentId)) {
             $this->redirect('/site/join-us');
         }
         // 获取openid
         $openid = (new WchatHelper)->getOpenid();
         // 如果已经注册过，则为更新数据
         if (!empty($openid)) {
-            $model = (new CustomerModel())->find()
+            $model = (new AgentUserModel())->find()
                 ->where(['openid' => $openid])
                 ->one();
         }
         if (!isset($model) || empty($model)) {
-            $model = new CustomerModel();
+            $model = new AgentUserModel();
         }
         
         if (Yii::$app->request->isPost) {
@@ -88,7 +89,7 @@ class SiteController extends BaseController
             if ($user = $model->signup()) {
                 // 把openid存入到cookie
                 $cookies = Yii::$app->response->cookies;
-                $cookie = new Cookie(['name' => 'customerId', 'value' => $user->id]);
+                $cookie = new Cookie(['name' => 'agentId', 'value' => $user->id]);
                 $cookies->add($cookie);
                 $this->redirect('/site/join-us');
                 // 暂时不写登陆功能
@@ -108,14 +109,16 @@ class SiteController extends BaseController
      */
     public function actionJoinUs()
     {
-        $sceneId = Yii::$app->request->cookies->getValue('customerId');
+        $sceneId = Yii::$app->request->cookies->getValue('agentId');
         $isJion = false;
         $src = '';
         if (is_file(Yii::$app->params['shareImagesPath'].$sceneId.'.png')) {
             $isJion = true;
             $src = Yii::$app->params['shareImagesUrl'].$sceneId.'.png';
         }
-        return $this->render('jion', ['isJion' => $isJion, 'src' => $src]);
+        $agent = (new AgentUserModel())->findOne(['id' => $sceneId]);
+
+        return $this->render('jion', ['isJion' => $isJion, 'src' => $src, 'status' => $agent->status]);
     }
     /**
      * 获取分享的图片
@@ -123,16 +126,52 @@ class SiteController extends BaseController
      */
     public function actionGetShareImage()
     {
+        
         Yii::$app->response->format = 'json';
-        $sceneId = Yii::$app->request->cookies->getValue('customerId');
+        $sceneId = Yii::$app->request->cookies->getValue('agentId');
+        $agent = (new AgentUserModel())->findOne(['id' => $sceneId]);
+        if ($agent->status != 2) {
+            return ['code' => 400, 'msg' => '审核未通过'];
+        }
         $result = (new WchatHelper)->getQuickMark($sceneId);
         if (empty($result)) {
             return ['code' => 400];
         }
-        $model = CustomerModel::findOne(['id' => $sceneId]);
-        $model->is_join = 1;
-        $model->save(false);
+        
         return ['code' => 200, 'imgUrl' => Yii::$app->params['shareImagesUrl'].$sceneId.'.png'];
+    }
+    public function actionUpload()
+    {
+        Yii::$app->response->format = 'json';
+
+        // var_dump($_FILES);exit;
+        // 允许的格式
+        $typeArr = ['image/jpeg', 'image/png'];
+        $fileType=$_FILES['abc']['type'];  
+        if(!in_array($fileType, $typeArr)) { 
+            return ['code' => 400, 'msg' => '图片格式错误'];
+        }  
+  
+        if(is_uploaded_file($_FILES['abc']['tmp_name'])) {  
+            $uploadedFile = $_FILES['abc']['tmp_name'];  
+      
+            $path = Yii::$app->params['agentImagesPath'];  
+            //判断该用户文件夹是否已经有这个文件夹  
+            if(!file_exists($path)) {  
+                mkdir($path);  
+            }  
+      
+            $fileTrueName=$_FILES['abc']['name']; 
+            $img = time().rand(1,1000).substr($fileTrueName,strrpos($fileTrueName,"."));
+            $moveToFile=$path.$img;  
+            if(move_uploaded_file($uploadedFile, iconv("utf-8","gb2312",$moveToFile))) {  
+                return ['code' => 200, 'msg' => '上传成功', 'url' => Yii::$app->params['agentImagesUrl'].$img]; 
+            } else {  
+                return ['code' => 400, 'msg' => '上传失败'];
+            }  
+        } else {  
+            return ['code' => 400, 'msg' => '你从哪里来？'];
+        }
     }
     /**
      * 创建菜单
@@ -156,7 +195,8 @@ class SiteController extends BaseController
         (new WchatHelper)->sendShareMessage($info);*/
 
         // 获取缓存
-        $cache = Yii::$app->cache->get('debug');
-        var_dump($cache);
+        // $cache = Yii::$app->cache->get('debug');
+        // var_dump($cache);
+        phpinfo();
     }
 }

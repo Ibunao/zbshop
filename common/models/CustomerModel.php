@@ -14,7 +14,6 @@ use wechat\helpers\WchatHelper;
  * @property string $openid openid
  * @property string $unionid unionid
  * @property string $share_id 分享人的id
- * @property int $is_join 0:没有加入，1：为加入了我们，申请了分享码
  * @property string $created_at
  * @property string $updated_at
  */
@@ -41,7 +40,6 @@ class CustomerModel extends \yii\db\ActiveRecord
             [['mobile', 'share_id', 'created_at', 'updated_at'], 'integer'],
             [['username', 'password'], 'string', 'max' => 60],
             [['openid', 'unionid'], 'string', 'max' => 120],
-            [['is_join'], 'integer', 'max' => 3],
         ];
     }
 
@@ -59,7 +57,6 @@ class CustomerModel extends \yii\db\ActiveRecord
             'openid' => 'Openid',
             'unionid' => 'Unionid',
             'share_id' => 'Share ID',
-            'is_join' => 'Is Join',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];
@@ -76,9 +73,6 @@ class CustomerModel extends \yii\db\ActiveRecord
             // var_dump($this->errors, $this->openid);
             return null;
         }
-        $this->username;
-        $this->mobile;
-        $this->password;
         $this->created_at = time();
         return $this->save() ? $this : null;
     }
