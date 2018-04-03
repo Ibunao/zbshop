@@ -107,6 +107,7 @@ class WchatHelper extends Object
                 break;
             // 关注过扫码的情况
             case 'scan':
+                // $this->sendText('你已经关注过了');
                 // $this->sendText($this->postObj->EventKey);
                 if ($this->postObj->EventKey) {
                     (new CustomerModel)->Attention($this->postObj->EventKey, $this->fromUsername);

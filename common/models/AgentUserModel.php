@@ -46,7 +46,7 @@ class AgentUserModel extends \yii\db\ActiveRecord
     {
         return [
             [['age', 'created_at', 'updated_at', 'status'], 'integer'],
-            [['username', 'password', 'sex', 'password2', 'age', 'area', 'idcard_img1', 'idcard_img2', 'bankcard', 'bank'], 'required'],
+            [['username', 'mobile', 'password', 'sex', 'password2', 'age', 'area', 'idcard_img1', 'idcard_img2', 'bankcard', 'bank'], 'required'],
             [['username', 'password', 'area'], 'string', 'max' => 60],
             [['mobile', 'bankcard'], 'string', 'max' => 30],
             [['sex'], 'string', 'max' => 3],
@@ -95,6 +95,7 @@ class AgentUserModel extends \yii\db\ActiveRecord
             return null;
         }
         $this->created_at = time();
+        $this->status = 1;
         return $this->save() ? $this : null;
     }
 }

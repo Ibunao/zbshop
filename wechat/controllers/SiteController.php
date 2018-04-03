@@ -69,7 +69,11 @@ class SiteController extends BaseController
         // 如果已经
         $agentId = Yii::$app->request->cookies->getValue('agentId');
         if (!empty($agentId)) {
-            $this->redirect('/site/join-us');
+            $agent = (new AgentUserModel())->findOne(['id' => $agentId]);
+            // 如果不是被拒绝
+            if ($agent->status != 3) {
+                $this->redirect('/site/join-us');
+            }
         }
         // 获取openid
         $openid = (new WchatHelper)->getOpenid();

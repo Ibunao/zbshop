@@ -4,6 +4,7 @@ namespace common\models;
 
 use Yii;
 use wechat\helpers\WchatHelper;
+use common\models\AgentUserModel;
 /**
  * This is the model class for table "{{%customer}}".
  *
@@ -97,7 +98,7 @@ class CustomerModel extends \yii\db\ActiveRecord
                 }
             }
         }
-        $model = self::findOne([
+        $model = AgentUserModel::findOne([
                 'id' => $sceneId,
             ]);
         if (!$model) {

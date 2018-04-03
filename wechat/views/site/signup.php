@@ -35,6 +35,7 @@ $this->params['breadcrumbs'] = [];
             <?php $form = ActiveForm::begin(['id' => 'form-signup']); ?>
 
                 <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
+                <?= $form->field($model, 'mobile')->textInput() ?>
                 <?= $form->field($model, 'sex')->dropDownList(
                                 [ 
                                     0 => '女',

@@ -33,14 +33,13 @@
                     ['label' => '商品编辑', 'options' => ['class' => 'header']],
                     ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii']],
                     ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug']],
-                    ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
                     [
-                        'label' => 'Some tools',
+                        'label' => '代理商管理',
                         'icon' => 'share',
                         'url' => '#',
                         'items' => [
-                            ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii'],],
-                            ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug'],],
+                            ['label' => '代理商审核', 'icon' => 'file-code-o', 'url' => ['/agent/index'],],
+                            ['label' => '代理商用户', 'icon' => 'dashboard', 'url' => ['/debug'],],
                             [
                                 'label' => 'Level One',
                                 'icon' => 'circle-o',

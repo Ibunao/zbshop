@@ -1,7 +1,10 @@
 <?php $this->beginBlock('endheader'); ?>
 <style type="text/css">
 	.align-center{
-		margin: 300px 0px;
+		margin: 300px 30px;
+	}
+	.margin-top{
+		margin-top: 30px;
 	}
 </style>
 <?php $this->endBlock(); ?>
@@ -12,8 +15,11 @@
 <div class="align-center">
 <?php if ($status == 2): ?>
 	<button id="jionus" type="button" class="btn btn-primary center-block">申请专属邀请码</button>
-<?php else: ?>
+<?php elseif ($status == 1): ?>
 	<button type="button" class="btn btn-warning center-block">审核中</button>
+<?php else: ?>
+	<button type="button" class="btn btn-danger center-block">申请被拒</button>
+	<button id="signup" type="button" class="btn btn-primary center-block margin-top">重新提交信息</button>
 <?php endif ?>
 
 </div>
@@ -36,6 +42,9 @@
 	  			}
 	  		}
     });
+	});
+	$("#signup").bind("click",function(){
+	  	location = '/site/signup';
 	});
 </script>
 
