@@ -24,7 +24,7 @@ use yii\helpers\Html;
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="user-image" alt="User Image"/>
-                        <span class="hidden-xs">Alexander Pierce</span>
+                        <span class="hidden-xs">趣途</span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
@@ -33,8 +33,8 @@ use yii\helpers\Html;
                                  alt="User Image"/>
 
                             <p>
-                                Alexander Pierce - Web Developer
-                                <small>Member since Nov. 2012</small>
+                                趣途商城 - 管理员
+                                <small>666999</small>
                             </p>
                         </li>
                         <!-- Menu Body -->

@@ -8,7 +8,7 @@
                 <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle" alt="User Image"/>
             </div>
             <div class="pull-left info">
-                <p>Alexander Pierce</p>
+                <p>趣途</p>
 
                 <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
@@ -30,18 +30,42 @@
             [
                 'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
                 'items' => [
-                    ['label' => '商品编辑', 'options' => ['class' => 'header']],
-                    ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii']],
-                    ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug']],
+                    ['label' => '后台管理', 'options' => ['class' => 'header']],
+                    [
+                        'label' => '商品管理',
+                        'icon' => 'file-code-o',
+                        'url' => '#',
+                        'items' => [
+                            ['label' => '添加商品', 'icon' => 'file-code-o', 'url' => ['/goods/index'],],
+                            ['label' => '待添加', 'icon' => 'dashboard', 'url' => ['#'],],
+                            [
+                                'label' => '待添加',
+                                'icon' => 'circle-o',
+                                'url' => '#',
+                                'items' => [
+                                    ['label' => 'Level Two', 'icon' => 'circle-o', 'url' => '#',],
+                                    [
+                                        'label' => 'Level Two',
+                                        'icon' => 'dashboard',
+                                        'url' => '#',
+                                        'items' => [
+                                            ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
+                                            ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
                     [
                         'label' => '代理商管理',
                         'icon' => 'share',
                         'url' => '#',
                         'items' => [
                             ['label' => '代理商审核', 'icon' => 'file-code-o', 'url' => ['/agent/index'],],
-                            ['label' => '代理商用户', 'icon' => 'dashboard', 'url' => ['/debug'],],
+                            ['label' => '代理商用户', 'icon' => 'dashboard', 'url' => ['/customer/index'],],
                             [
-                                'label' => 'Level One',
+                                'label' => '待添加',
                                 'icon' => 'circle-o',
                                 'url' => '#',
                                 'items' => [

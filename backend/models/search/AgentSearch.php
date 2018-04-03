@@ -80,4 +80,5 @@ class AgentSearch extends AgentUserModel
 
         return $dataProvider;
     }
+    
 }

@@ -17,17 +17,17 @@ class CustomerController extends Controller
     /**
      * @inheritdoc
      */
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
-    }
+    // public function behaviors()
+    // {
+    //     return [
+    //         'verbs' => [
+    //             'class' => VerbFilter::className(),
+    //             'actions' => [
+    //                 'delete' => ['POST'],
+    //             ],
+    //         ],
+    //     ];
+    // }
 
     /**
      * Lists all CustomerModel models.
@@ -50,30 +50,30 @@ class CustomerController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
+    // public function actionView($id)
+    // {
+    //     return $this->render('view', [
+    //         'model' => $this->findModel($id),
+    //     ]);
+    // }
 
     /**
      * Creates a new CustomerModel model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-    {
-        $model = new CustomerModel();
+    // public function actionCreate()
+    // {
+    //     $model = new CustomerModel();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+    //     if ($model->load(Yii::$app->request->post()) && $model->save()) {
+    //         return $this->redirect(['view', 'id' => $model->id]);
+    //     }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
-    }
+    //     return $this->render('create', [
+    //         'model' => $model,
+    //     ]);
+    // }
 
     /**
      * Updates an existing CustomerModel model.
@@ -82,18 +82,18 @@ class CustomerController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
+    // public function actionUpdate($id)
+    // {
+    //     $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+    //     if ($model->load(Yii::$app->request->post()) && $model->save()) {
+    //         return $this->redirect(['view', 'id' => $model->id]);
+    //     }
 
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
+    //     return $this->render('update', [
+    //         'model' => $model,
+    //     ]);
+    // }
 
     /**
      * Deletes an existing CustomerModel model.
@@ -102,12 +102,12 @@ class CustomerController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
+    //     return $this->redirect(['index']);
+    // }
 
     /**
      * Finds the CustomerModel model based on its primary key value.

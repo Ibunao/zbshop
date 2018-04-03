@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use common\models\CustomerModel;
+use common\models\AgentUserModel;
 
 /**
  * CustomerSearch represents the model behind the search form of `common\models\CustomerModel`.
@@ -73,4 +74,5 @@ class CustomerSearch extends CustomerModel
 
         return $dataProvider;
     }
+
 }

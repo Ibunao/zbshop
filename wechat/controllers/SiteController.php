@@ -150,10 +150,10 @@ class SiteController extends BaseController
 
         // var_dump($_FILES);exit;
         // 允许的格式
-        $typeArr = ['image/jpeg', 'image/png'];
+        $typeArr = ['image/jpeg', 'image/png', 'image/jpg'];
         $fileType=$_FILES['abc']['type'];  
         if(!in_array($fileType, $typeArr)) { 
-            return ['code' => 400, 'msg' => '图片格式错误'];
+            return ['code' => 400, 'msg' => '图片格式错误'.$fileType];
         }  
   
         if(is_uploaded_file($_FILES['abc']['tmp_name'])) {  

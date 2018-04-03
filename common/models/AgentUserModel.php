@@ -98,4 +98,24 @@ class AgentUserModel extends \yii\db\ActiveRecord
         $this->status = 1;
         return $this->save() ? $this : null;
     }
+
+    /**
+     * 获取所有代理商
+     * @return [type] [description]
+     */
+    public static function getAgents()
+    {
+        $result = AgentUserModel::find()
+            ->select(['id', 'username'])
+            ->asArray()
+            ->indexBy('id')
+            ->all();
+        if ($result) {
+            foreach ($result as $key => $value) {
+                $result[$key] = $value['username'];
+            }
+            return $result;
+        }
+        return [];
+    }
 }

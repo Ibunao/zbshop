@@ -50,7 +50,7 @@ class CustomerModel extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
+            'id' => '用户id',
             'username' => 'Username',
             'mobile' => '手机号',
             'password' => '输入密码',
@@ -116,4 +116,15 @@ class CustomerModel extends \yii\db\ActiveRecord
         // 发送邀请成功通知。
         (new WchatHelper)->sendShareMessage($info);
     }
+
+
+    /**
+     * 获取代理人
+     * @return [type] [description]
+     */
+    public function getAgentName()
+    {
+        return AgentUserModel::findOne(['id' => $this->share_id])->username;
+    }
+
 }
