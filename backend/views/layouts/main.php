@@ -35,6 +35,10 @@ if (Yii::$app->controller->action->id === 'login') {
         <?= Html::csrfMetaTags() ?>
         <title><?= Html::encode($this->title) ?></title>
         <?php $this->head() ?>
+<!-- header插入style -->
+<?php if (isset($this->blocks['endheader'])): ?>
+    <?= $this->blocks['endheader'] ?>
+<?php endif; ?>
     </head>
     <body class="hold-transition skin-blue sidebar-mini">
     <?php $this->beginBody() ?>
@@ -60,6 +64,10 @@ if (Yii::$app->controller->action->id === 'login') {
 
     <?php $this->endBody() ?>
     </body>
+<!-- 页面尾部插入js -->
+<?php if (isset($this->blocks['endbody'])): ?>
+    <?= $this->blocks['endbody'] ?>
+<?php endif; ?>
     </html>
     <?php $this->endPage() ?>
 <?php } ?>
