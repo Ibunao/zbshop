@@ -25,6 +25,17 @@ class GoodsController extends BaseController
 	 */
 	public function actionGetAttrs($cid)
 	{
-		return (new AttributesModel)->getAttributes($cid);
+		Yii::$app->response->format = 'json';
+		return (new AttributesModel)->getAttrs($cid);
+	}
+	/**
+	 * 通过分类id获取分类所属的属性
+	 * @param  [type] $cid [description]
+	 * @return [type]      [description]
+	 */
+	public function actionSetAttr($attr)
+	{
+		Yii::$app->response->format = 'json';
+		return (new AttributesModel)->getAttrs($cid);
 	}
 }

@@ -52,14 +52,32 @@ class AttributesModel extends \yii\db\ActiveRecord
      * @param  [type] $cid 分类id
      * @return [type]      [description]
      */
-    public function getAttributes($cid)
+    public function getAttrs($cid)
     {
         $result = self::find()
             ->select(['id', 'name'])
             ->where(['c_id' => $cid])
             ->asArray()
             ->indexBy('id')
-            ->all()
+            ->all();
+        foreach ($result as $key => $value) {
+            $result[$key] = $value['name'];
+        }
+        return $result;
+    }
+    /**
+     * 添加分类属性
+     * @param  [type] $cid 分类id
+     * @return [type]      [description]
+     */
+    public function setAttr($cid, $value)
+    {
+        $result = self::find()
+            ->select(['id', 'name'])
+            ->where(['c_id' => $cid])
+            ->asArray()
+            ->indexBy('id')
+            ->all();
         foreach ($result as $key => $value) {
             $result[$key] = $value['name'];
         }
