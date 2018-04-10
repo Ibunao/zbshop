@@ -66,21 +66,27 @@ class AttributesModel extends \yii\db\ActiveRecord
         return $result;
     }
     /**
+     * use
+     * backend/goods/actionSetAttr
      * 添加分类属性
      * @param  [type] $cid 分类id
+     * @param  [type] $name 属性名
      * @return [type]      [description]
      */
-    public function setAttr($cid, $value)
+    public function setAttr($cid, $name)
     {
-        $result = self::find()
+        $model = self::find()
             ->select(['id', 'name'])
-            ->where(['c_id' => $cid])
-            ->asArray()
-            ->indexBy('id')
-            ->all();
-        foreach ($result as $key => $value) {
-            $result[$key] = $value['name'];
+            ->where(['c_id' => $cid, 'name' => $name])
+            ->one();
+        if ($model) {
+            return false;
         }
-        return $result;
+        $this->c_id = $cid;
+        $this->name = $name;
+        if ($this->save()) {
+            return [$this->id => $name];
+        }
+        return false;
     }
 }
