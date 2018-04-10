@@ -40,20 +40,33 @@
   </div>
 </div>
 <div class="row">
-   <label class="col-sm-2 control-label" for="category">选择分组</label>
-   <div class="col-sm-3">
+   <label class="col-sm-2 control-label" for="category">选择分组(选填)</label>
+   <div id="append-group" class="row col-sm-10">
      <?php foreach ($groups as $key => $value): ?>
-       <label class="checkbox-inline">
-        <input type="checkbox" name="<?='groups['.$key.']' ;?>" value="<?=$key ;?>"> <?=$value ;?>
-      </label>
+     <div class="col-sm-2">
+         <label class="checkbox-inline">
+          <input type="checkbox" name="<?='groups['.$key.']' ;?>" value="<?=$key ;?>"> <?=$value['name'] ;?>
+        </label>
+     </div>
      <?php endforeach ?>
    </div>
-  </div>
-
+   <div class="col-sm-offset-2">
+     <div class="col-sm-2  col-md-3 border-style form-inline">
+      <label for="add-group-input">添加新分组</label>
+      <input class="form-control" placeholder="输入分组名" type="text" name="add-group-input">
+      <button id="add-group" class="btn btn-default">添加</button>
+     </div>
+   </div>
+</div>
+<div class="row form-inline">
+  <label class="col-sm-2 control-label" for="category">商品名称</label>
+  <input type="text" class="form-control" name="goodsName" placeholder="商品名称">
+</div>
 <?php $this->beginBlock('endbody'); ?>
 
 <script>
   var attrDom = '<div class="col-sm-2  col-md-3 border-style form-inline"><label for="attrs[replaceid]">replacename</label><input class="form-control" placeholder="输入属性值" type="text" name="attrs[replaceid]"></div>';
+  var groupDom = '<div class="col-sm-2"><label class="checkbox-inline"><input type="checkbox" name="groups[replaceid]" value="replacename"> replacename</label></div>';
 	$("#category").change(function (that) {
 		var cid = $("#category").val();
 		if (cid) {
@@ -88,6 +101,30 @@
             replaceDom = attrDom.replace(/replaceid/g, key);
             replaceDom = replaceDom.replace(/replacename/g, result.other[key]);
             $(replaceDom).appendTo($("#append-attr"));
+          }
+        }else{
+          alert(result.msg);
+        }
+      });
+    }
+  })
+  $('#add-group').bind('click', function () {
+    var group = $("input[name='add-group-input']").val();
+    group = $.trim(group);
+
+    if (group == false) {
+      alert('请输入正确的分组名');
+      return;
+    }
+    if (group) {
+      var url = '/goods/set-group';
+      var data = {group: group};
+      ajaxRequest(url, data, function (result) {
+        if (result.code == 200) {
+          for (var key in result.other) {
+            replaceDom = groupDom.replace(/replaceid/g, key);
+            replaceDom = replaceDom.replace(/replacename/g, result.other[key]);
+            $(replaceDom).appendTo($("#append-group"));
           }
         }else{
           alert(result.msg);

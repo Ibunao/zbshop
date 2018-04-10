@@ -55,4 +55,18 @@ class GoodsController extends BaseController
 		}
 		return $this->send(400, '已存在或者添加失败');
 	}
+	public function actionSetGroup()
+	{
+		Yii::$app->response->format = 'json';
+		$group = Yii::$app->request->get('group');
+		$group = trim($group);
+		if (empty($group)) {
+			return $this->send(400, '请求参数不正确');
+		}
+		$result = (new GroupsModel)->setGroup($group);
+		if ($result) {
+			return $this->send(200, '添加成功', $result);
+		}
+		return $this->send(400, '已存在或者添加失败');
+	}
 }

@@ -49,7 +49,22 @@ class GroupsModel extends \yii\db\ActiveRecord
     {
         return self::find()
             ->asArray()
-            ->all()
-            ->indexBy('id');
+            ->indexBy('id')
+            ->all();
+    }
+    public function setGroup($group)
+    {
+        $model = self::find()
+            ->select(['id', 'name'])
+            ->where(['name' => $group])
+            ->one();
+        if ($model) {
+            return false;
+        }
+        $this->name = $group;
+        if ($this->save()) {
+            return [$this->id => $group];
+        }
+        return false;
     }
 }
