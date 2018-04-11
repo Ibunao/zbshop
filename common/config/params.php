@@ -6,7 +6,7 @@ return [
     'wechatUrl' => 'http://wx.quutuu.com',
     'adminUrl' => 'http://admin.quutuu.com',
     'frontendUrl' => 'http://www.quutuu.com',
-
+    
     // 分类，初期为配置文件的形式。
     'categories' => [
     	1 => [

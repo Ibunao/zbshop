@@ -99,4 +99,5 @@ class SiteController extends Controller
     {
         phpinfo();
     }
+    
 }

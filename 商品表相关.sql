@@ -18,7 +18,7 @@ CREATE TABLE `shop_attributes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 # 规格表  shop_specifications
 CREATE TABLE `shop_specifications` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '属性id',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '规格id',
   `name` varchar(60) NOT NULL COMMENT '规格名',
   `need_img` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0：不需要图片、1：需要图片',
   `disabled` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '0：有效、1：无效',
@@ -60,7 +60,7 @@ CREATE TABLE `shop_goods` (
   `limit` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '是否限购0:不限购、其它数值为限购',
   `location` varchar(60) NOT NULL DEFAULT '' COMMENT '生产地或者发货地',
   `is_bill` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否开发票0:不开、1：开',
-  `is_ repair` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否保修0:不保修、1:保修',
+  `is_repair` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否保修0:不保修、1:保修',
   `is_on` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否上架0:不上架、1:上架',
   `created_at` int(11) NOT NULL,
   `updated_at` int(11) NOT NULL,

@@ -5,18 +5,52 @@ use Yii;
 use backend\controllers\bases\BaseController;
 use common\models\AttributesModel;
 use common\models\GroupsModel;
+use common\models\GoodsModel;
 /**
  * 商品控制器
  */
 class GoodsController extends BaseController
 {
-
 	public function actionIndex()
 	{
 		return $this->render('index');
 	}
 	public function actionCreate()
 	{
+		if ($_POST) {
+			$session = Yii::$app->session;
+			$params = $_POST;
+			$noError = true;
+			$models = new GoodsModel;
+			if (empty($params['category'])) {
+				$session->setFlash('error', '请选择分类');
+				$noError = false;
+			}
+			if (empty($params['goodsName'])) {
+				$session->setFlash('error', '请填写商品名称');
+				$noError = false;
+			}
+			if (empty($params['goodsMasterImg'])) {
+				$session->setFlash('error', '请上传主图');
+				$noError = false;
+			}
+			
+			if (!empty($params['limitation']) && $params['limitation'] == 1) {
+				if (empty($params['limitationvalue'])) {
+					$session->setFlash('error', '请填写商品限购量');
+					$noError = false;
+				}
+			}
+			if ($noError) {
+				$result = $models->addGoods($params);
+				if ($result) {
+					$this->redirect('/goods/index');return;
+				}else{
+					$session->setFlash('error', '添加失败');
+				}
+			}
+
+		}
 		$groups = (new GroupsModel)->getGroups();
 		return $this->render('create', ['groups' =>$groups]);
 	}
