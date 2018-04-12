@@ -40,3 +40,4 @@ common/config/db-local.php
 wechat/config/params.php
 sftp-config.json
 backend/web/images/
+common/config/privacyparams.php
