@@ -69,7 +69,7 @@ class GoodsController extends BaseController
 		if ($result) {
 			return $this->send(200, '获取成功', $result);
 		}
-		return $this->send(400, '已存在或者添加失败');
+		return $this->send(400, '没有属性');
 	}
 	/**
 	 * 通过分类id获取分类所属的属性

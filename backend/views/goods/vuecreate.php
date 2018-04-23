@@ -12,6 +12,19 @@ $this->title = '添加商品';
   .row{
     margin-bottom: 10px;
   }
+  .x-disappear{
+    float: left;
+    margin:6px 10px;
+  }
+  .x-disappear-a{
+    border:solid gray 1px;
+    padding: 3px;
+  }
+  .x-disappear-b{
+    border:solid gray 1px;
+    padding: 3px;
+    background-color: gray;
+  }
 </style>
 <?php $this->endBlock(); ?>
 <form action="/goods/create" method="post">
@@ -99,9 +112,46 @@ $this->title = '添加商品';
     <input type="radio" name="specification" id="inlineRadio1" value="0" v-model="pickedSpec"> 单规格
   </label>
   <label class="radio-inline">
-    <input type="radio" name="specification" id="inlineRadio2" value="1" v-model="pickedSpec" @click = "getSpecs"> 多规格
+    <input type="radio" name="specification" id="inlineRadio2" value="1" @click = "getSpecs"> 多规格
   </label>
+  
 </div>
+<div class="row" v-show="pickedSpec == 1">
+  <div class="col-sm-offset-2">
+     <button id="add-specs-button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-specs-modal">添加新属性</button>
+  </div>
+</div>
+<!-- 弹出框 -->
+<div id="add-specs-modal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">添加新规格</h4>
+      </div>
+      <div class="modal-body">
+        <label>添加规格名</label>
+        <input id="input-add" v-model.trim="addSpecsAttr.name" class="form-control" placeholder="输入规格名" type="text" name="add-specs-input">
+
+        <label>添加规格值</label>
+        <div class="input-group">
+          <input id="input-add" v-model.trim="addSpecsValue" class="form-control col-sm-8" placeholder="输入规格值" type="text" name="add-specs-input" aria-describedby="basic-addon2">
+          <span class="input-group-addon" id="basic-addon2" @click="addSpecValue">添加</span>
+        </div>
+        <div class="row">
+          <div class="x-disappear" v-for="item in addSpecsAttr.values">
+            <span class="x-disappear-a">{{item}}</span><span :data-spec="item" class="x-disappear-b" @click="deleteSpec">&times;</span>
+          </div>
+        </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" @click = "addSpecs">保存</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <div v-show="pickedSpec == 0">
   <div class="row form-inline">
     <label class="col-sm-2 control-label" for="category">微信价(售价)</label>
@@ -210,6 +260,12 @@ var app = new Vue({
     groups:<?=json_encode($groups) ;?>,// 为了方便，没写接口
     addGroupValue:"",// 添加的分组值 周转
     pickedSpec:0, // 选择的规格
+    addSpecsValues:[],// 存放添加的多个规格值
+    addSpecsAttr:{// 添加的规格属性 周转
+      name:"",// 规格名
+      values:[], // 规格值
+    }, 
+    addSpecsValue:"", // 添加的一个规格值。周转
   },
   methods: {
     selectChange: function (event) {
@@ -226,6 +282,27 @@ var app = new Vue({
     },
     getSpecs:function (event) {
       getSpecs();
+    },
+    addSpecs:function (event) {
+      addSpecs();
+    },
+    addSpecValue:function (event) {
+      if (this.addSpecsAttr.name) {
+        var index = this.addSpecsAttr.values.indexOf(this.addSpecsValue);
+        if (index != -1) {
+          return;
+        }
+        this.addSpecsAttr.values.push(this.addSpecsValue);
+        this.addSpecsValue = "";
+      }else{
+        alert("请添加规格名")
+      }
+    },
+    deleteSpec:function (e) {
+      console.log(e);
+      var spec = e.target.dataset.spec;
+      var index = this.addSpecsAttr.values.indexOf(spec);
+      this.addSpecsAttr.values.splice(index, 1);
     }
   }
 })
@@ -242,6 +319,8 @@ function getAttrs(cid) {
       result = res.other;
       console.log(result);
       app.attrs = result;
+    }else{
+      app.attrs = {};
     }
   });
 }
@@ -282,6 +361,7 @@ function addGroups() {
 
   if (!group) {
     alert('请输入正确的分组名');
+    
     return;
   }
   if (group) {
@@ -308,9 +388,11 @@ function getSpecs() {
 
   if (!cid) {
     alert('请选择商品分类');
+    app.pickedSpec = 0;
     return;
   }
   if (cid) {
+    app.pickedSpec = 1;
     var url = '/goods/get-specs';
     var data = {cid: cid};
     ajaxRequest(url, data, function (result) {
