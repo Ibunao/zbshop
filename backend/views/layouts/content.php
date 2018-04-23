@@ -29,7 +29,7 @@ use dmstr\widgets\Alert;
         ) ?>
     </section>
 
-    <section class="content">
+    <section id="vueApp" class="content">
         <?= Alert::widget() ?>
         <?= $content ?>
     </section>

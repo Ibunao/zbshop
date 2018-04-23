@@ -63,7 +63,8 @@ class GroupsModel extends \yii\db\ActiveRecord
         }
         $this->name = $group;
         if ($this->save()) {
-            return [$this->id => $group];
+            return ["id" => $this->id,
+                "name" => $group];
         }
         return false;
     }

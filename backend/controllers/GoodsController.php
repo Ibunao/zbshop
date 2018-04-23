@@ -52,7 +52,10 @@ class GoodsController extends BaseController
 
 		}
 		$groups = (new GroupsModel)->getGroups();
-		return $this->render('create', ['groups' =>$groups]);
+		// json_encode的时候去掉索引
+		sort($groups);
+		// return $this->render('create', ['groups' =>$groups]);
+		return $this->render('vuecreate', ['groups' =>$groups]);
 	}
 	/**
 	 * 通过分类id获取分类所属的属性
