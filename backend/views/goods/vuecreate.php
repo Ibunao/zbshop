@@ -27,7 +27,7 @@ $this->title = '添加商品';
   }
 </style>
 <?php $this->endBlock(); ?>
-<form action="/goods/create" method="post">
+<form action="/goods/create" method="post" onkeydown="if(event.keyCode==13){return false;}">
 <input name="_csrf" type="hidden" id="_csrf" value="<?= Yii::$app->request->csrfToken ?>">
 <div class="form-group">
   <div class="row">
@@ -117,9 +117,38 @@ $this->title = '添加商品';
   
 </div>
 <div class="row" v-show="pickedSpec == 1">
-  <div class="col-sm-offset-2">
-     <button id="add-specs-button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-specs-modal">添加新属性</button>
+  <div v-for="(items, name) in specs" class="col-sm-offset-2">
+    <h5>{{name}} : <button type="button" :data-sid = "items[0]['sid']" :data-name = "name" @click="deleteSpecs" class="btn btn-danger">删除</button></h5> 
+    <div class="checkbox-inline" class="checkbox" v-for="item in items">
+      <label>
+        <input type="checkbox" :id="'specsv'+item.svid" :value="item.name" @click="computeTable" v-model="selectSpecs[name].value"> {{item.name}}
+      </label>
+    </div>
   </div>
+</div>
+<div class="row" v-show="pickedSpec == 1">
+  <div class="col-sm-offset-2">
+     <button id="add-specs-button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-specs-modal">添加/修改规格</button>
+  </div>
+</div>
+<div class="row" v-show="specRequestEnd == 1">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th v-for="(item, name) in selectSpecs" v-if="!item.value.length">{{name}}</th>
+        <th>微信价</th>
+        <th>原价(选填)</th>
+        <th>库存</th>
+        <th>商品条码</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="" >
+        
+      </tr>
+    </tbody>
+  </table>
 </div>
 <!-- 弹出框 -->
 <div id="add-specs-modal" class="modal fade" tabindex="-1" role="dialog">
@@ -127,12 +156,16 @@ $this->title = '添加商品';
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">添加新规格</h4>
+        <h4 class="modal-title">添加/修改规格</h4>
       </div>
       <div class="modal-body">
         <label>添加规格名</label>
         <input id="input-add" v-model.trim="addSpecsAttr.name" class="form-control" placeholder="输入规格名" type="text" name="add-specs-input">
-
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" v-model="addSpecsAttr.main"> 勾选为主规格(如颜色等需要放不同展示图片的)
+          </label>
+        </div>
         <label>添加规格值</label>
         <div class="input-group">
           <input id="input-add" v-model.trim="addSpecsValue" class="form-control col-sm-8" placeholder="输入规格值" type="text" name="add-specs-input" aria-describedby="basic-addon2">
@@ -260,12 +293,16 @@ var app = new Vue({
     groups:<?=json_encode($groups) ;?>,// 为了方便，没写接口
     addGroupValue:"",// 添加的分组值 周转
     pickedSpec:0, // 选择的规格
-    addSpecsValues:[],// 存放添加的多个规格值
+    specs:[],// 存放已有的规格
     addSpecsAttr:{// 添加的规格属性 周转
       name:"",// 规格名
       values:[], // 规格值
+      main:false, //是否为主规格
     }, 
     addSpecsValue:"", // 添加的一个规格值。周转
+    selectSpecs:{},
+    specRequestEnd:0,// spec请求结束
+    specTable:[], // table的渲染数据
   },
   methods: {
     selectChange: function (event) {
@@ -303,9 +340,55 @@ var app = new Vue({
       var spec = e.target.dataset.spec;
       var index = this.addSpecsAttr.values.indexOf(spec);
       this.addSpecsAttr.values.splice(index, 1);
+    },
+    // 删除一个分类下的规格
+    deleteSpecs:function (e) {
+      var sid = e.target.dataset.sid;
+      var name = e.target.dataset.name;
+      deleteSpecs(sid, name);
+    },
+    // 计算table渲染数据
+    computeTable:function () {
+      var data = this.selectSpecs;
+      this.specTable = multiCartesian(data)
     }
   }
-})
+});
+(function() {
+    //笛卡尔积  
+    var Cartesian = function(a, b) {
+        var ret = [];
+        for (var i = 0; i < a.length; i++) {
+            for (var j = 0; j < b.length; j++) {
+                ret.push(ft(a[i], b[j]));
+            }
+        }
+        return ret;
+    }
+    var ft = function(a, b) {
+        if (!(a instanceof Array))
+            a = [a];
+        var ret = Array.call(null, a);
+        ret.push(b);
+        return ret;
+    }
+    //多个一起做笛卡尔积  
+    multiCartesian = function(data) {
+        var len = data.length;
+        if (len == 0)
+            return [];
+        else if (len == 1)
+            return data[0];
+        else {
+            var r = data[0];
+            for (var i = 1; i < len; i++) {
+                r = Cartesian(r, data[i]);
+            }
+            return r;
+        }
+    }
+})();
+
 /**
  * 通过分类id获取属性
  * @param  {[type]} cid 分类id
@@ -380,10 +463,10 @@ function addGroups() {
   }
 }
 /**
- * 获取一个分类下的规格
+ * 获取一个分类下的规格/或所有
  * @return {[type]} [description]
  */
-function getSpecs() {
+function getSpecs(name) {
   var cid = app.cid;
 
   if (!cid) {
@@ -395,17 +478,63 @@ function getSpecs() {
     app.pickedSpec = 1;
     var url = '/goods/get-specs';
     var data = {cid: cid};
+    if (name) {
+      data.name = name;
+    }
     ajaxRequest(url, data, function (result) {
       if (result.code == 200) {
         console.log(result.other);
-        app.groups.push(result.other)
+
+        app.specs = result.other;
+        for(index in app.specs){
+          app.selectSpecs[index] = {value:[], main:app.specs[index][0]['main']};
+        }
+      }else{
+        app.specs = {};
+      }
+      app.specRequestEnd = 1;
+    });
+  }
+}
+/**
+ * 存储规格及规格值
+ * @return {[type]} [description]
+ */
+function addSpecs() {
+  var cid = app.cid;
+  var spec = app.addSpecsAttr;
+  if (!cid) {
+    alert('请选择商品分类');
+    app.pickedSpec = 0;
+    return;
+  }
+  if (cid) {
+    var url = '/goods/add-specs';
+    var data = {cid: cid, spec: spec};
+    ajaxRequest(url, data, function (result) {
+      if (result.code == 200) {
+        console.log(result.other);
         $("#add-specs-modal").modal("hide")
-        app.addGroupValue = "";
+        app.addSpecsAttr = {};
       }else{
         alert(result.msg);
       }
     });
   }
+}
+function deleteSpecs(sid, name) {
+  var cid = app.cid;
+
+  var url = '/goods/delete-specs';
+  var data = {cid: cid, sid: sid};
+  ajaxRequest(url, data, function (result) {
+    if (result.code == 200) {
+      console.log(result.other);
+      getSpecs();
+    }else{
+      alert(result.msg);
+    }
+  });
 }
 function ajaxRequest(url, data, func, dataType = 'json', type = 'GET') {
   $.ajax({

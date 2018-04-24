@@ -6,6 +6,7 @@ use backend\controllers\bases\BaseController;
 use common\models\AttributesModel;
 use common\models\GroupsModel;
 use common\models\GoodsModel;
+use common\models\SpecModel;
 /**
  * 商品控制器
  */
@@ -105,5 +106,50 @@ class GoodsController extends BaseController
 			return $this->send(200, '添加成功', $result);
 		}
 		return $this->send(400, '已存在或者添加失败');
+	}
+	public function actionAddSpecs()
+	{
+		Yii::$app->response->format = 'json';
+		$cid = Yii::$app->request->get('cid');
+		$spec = Yii::$app->request->get('spec');
+
+		if (empty($cid) || empty($spec)) {
+			return $this->send(400, '请求参数不正确');
+		}
+		$result = (new SpecModel)->setSpec($cid, $spec);
+		if ($result) {
+			return $this->send(200, '添加成功', $result);
+		}
+		return $this->send(400, '已存在或者添加失败');
+	}
+	public function actionGetSpecs()
+	{
+		Yii::$app->response->format = 'json';
+		$cid = Yii::$app->request->get('cid');
+		$name = Yii::$app->request->get('name');
+
+		if (empty($cid)) {
+			return $this->send(400, '请求参数不正确');
+		}
+		$result = (new SpecModel)->getSpecs($cid, $name);
+		if ($result) {
+			return $this->send(200, '获取成功', $result);
+		}
+		return $this->send(400, '空');
+	}
+	public function actionDeleteSpecs()
+	{
+		Yii::$app->response->format = 'json';
+		$cid = Yii::$app->request->get('cid');
+		$sid = Yii::$app->request->get('sid');
+
+		if (empty($cid)) {
+			return $this->send(400, '请求参数不正确');
+		}
+		$result = (new SpecModel)->deleteSpecs($cid, $sid);
+		if ($result) {
+			return $this->send(200, '删除', $result);
+		}
+		return $this->send(400, '删除失败');
 	}
 }
