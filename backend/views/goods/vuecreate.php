@@ -121,7 +121,7 @@ $this->title = '添加商品';
     <h5>{{name}} : <button type="button" :data-sid = "items[0]['sid']" :data-name = "name" @click="deleteSpecs" class="btn btn-danger">删除</button></h5> 
     <div class="checkbox-inline" class="checkbox" v-for="item in items">
       <label>
-        <input type="checkbox" :id="'specsv'+item.svid" :value="item.name" @click="computeTable" v-model="selectSpecs[name].value"> {{item.name}}
+        <input type="checkbox" :id="'specsv'+item.svid" :value="item.name" @click="computeTable(name, item.name)"> {{item.name}}
       </label>
     </div>
   </div>
@@ -136,7 +136,7 @@ $this->title = '添加商品';
     <thead>
       <tr>
         <th>#</th>
-        <th v-for="(item, name) in selectSpecs" v-if="!item.value.length">{{name}}</th>
+        <th v-for="(item, name) in selectSpecs" v-if="item.value.length">{{name}}</th>
         <th>微信价</th>
         <th>原价(选填)</th>
         <th>库存</th>
@@ -304,6 +304,9 @@ var app = new Vue({
     specRequestEnd:0,// spec请求结束
     specTable:[], // table的渲染数据
   },
+  watch: {
+
+  },
   methods: {
     selectChange: function (event) {
       console.log(this.cid);
@@ -348,8 +351,26 @@ var app = new Vue({
       deleteSpecs(sid, name);
     },
     // 计算table渲染数据
-    computeTable:function () {
-      var data = this.selectSpecs;
+    computeTable:function (name, value) {
+      console.log(name, value)
+      var index = this.selectSpecs[name].value.indexOf(value);
+      if (index == -1) {
+        this.selectSpecs[name].value.push(value);
+      }else{
+        this.selectSpecs[name].value.splice(index, 1);
+      }
+
+      var data = [];
+      for (item in this.selectSpecs) {
+        if (this.selectSpecs[item].value.length) {
+          if (this.selectSpecs[item].main) {
+            data.unshift(this.selectSpecs[item].value);
+          }else{
+            data.push(this.selectSpecs[item].value);
+          }
+        }
+      }
+      console.log(data);
       this.specTable = multiCartesian(data)
     }
   }
@@ -366,9 +387,14 @@ var app = new Vue({
         return ret;
     }
     var ft = function(a, b) {
-        if (!(a instanceof Array))
-            a = [a];
-        var ret = Array.call(null, a);
+        var ret = null;
+        if (!(a instanceof Array)){
+          ret = [a];
+        }else{
+          ret = a.slice();
+        }
+        
+        // var ret = Array.call(null, a);
         ret.push(b);
         return ret;
     }
