@@ -124,6 +124,7 @@ class CustomerModel extends \yii\db\ActiveRecord
      */
     public function getAgentName()
     {
+        var_dump(AgentUserModel::findOne(['id' => $this->share_id]));exit;
         return AgentUserModel::findOne(['id' => $this->share_id])->username;
     }
 
