@@ -136,7 +136,8 @@ $this->title = '添加商品';
     <thead>
       <tr>
         <th>#</th>
-        <th v-for="(item, name) in selectSpecs" v-if="item.value.length">{{name}}</th>
+        <th v-for="name in specTableHeader">{{name}}</th>
+        <th>图片</th>
         <th>微信价</th>
         <th>原价(选填)</th>
         <th>库存</th>
@@ -144,8 +145,14 @@ $this->title = '添加商品';
       </tr>
     </thead>
     <tbody>
-      <tr v-for="" >
-        
+      <tr v-for="(item, index) in specTable" :class="index%2 == 0 ? 'active':'success'">
+        <td>{{index+1}}</td>
+        <td v-for="name in item">{{name}}</td>
+        <td><input type="file" name=""></td>
+        <td><input type="text" class="form-control" :name="goodsWxPrice" placeholder="销售价格"></td>
+        <td><input type="text" class="form-control" name="goodsOriPrice" placeholder="原价格"></td>
+        <td><input type="text" class="form-control" name="goodsStore" placeholder="库存"></td>
+        <td><input type="text" class="form-control" name="goodsNo" placeholder="商品条码"></td>
       </tr>
     </tbody>
   </table>
@@ -303,6 +310,7 @@ var app = new Vue({
     selectSpecs:{},
     specRequestEnd:0,// spec请求结束
     specTable:[], // table的渲染数据
+    specTableHeader:[], // table的渲染数据
   },
   watch: {
 
@@ -361,12 +369,15 @@ var app = new Vue({
       }
 
       var data = [];
+      this.specTableHeader = [];
       for (item in this.selectSpecs) {
         if (this.selectSpecs[item].value.length) {
           if (this.selectSpecs[item].main) {
             data.unshift(this.selectSpecs[item].value);
+            this.specTableHeader.unshift(item);
           }else{
             data.push(this.selectSpecs[item].value);
+            this.specTableHeader.push(item);
           }
         }
       }
