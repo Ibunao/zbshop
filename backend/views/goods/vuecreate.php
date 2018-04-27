@@ -148,11 +148,11 @@ $this->title = '添加商品';
       <tr v-for="(item, index) in specTable" :class="index%2 == 0 ? 'active':'success'">
         <td>{{index+1}}</td>
         <td v-for="name in item">{{name}}</td>
-        <td><input type="file" name=""></td>
-        <td><input type="text" class="form-control" :name="goodsWxPrice" placeholder="销售价格"></td>
-        <td><input type="text" class="form-control" name="goodsOriPrice" placeholder="原价格"></td>
-        <td><input type="text" class="form-control" name="goodsStore" placeholder="库存"></td>
-        <td><input type="text" class="form-control" name="goodsNo" placeholder="商品条码"></td>
+        <td><input type="file" :name="'specImg'+index" @change="specImgUpload($event,index)"><img src="specTable[index]['img']"></td>
+        <td><input type="text" class="form-control" v-model="specTable[index]['price']" placeholder="销售价格"></td>
+        <td><input type="text" class="form-control" name="specTable[index]['goodsOriPrice']goodsOriPrice" placeholder="原价格"></td>
+        <td><input type="text" class="form-control" name="specTable[index]['goodsStore']" placeholder="库存"></td>
+        <td><input type="text" class="form-control" name="specTable[index]['goodsNo']" placeholder="商品条码"></td>
       </tr>
     </tbody>
   </table>
@@ -383,6 +383,25 @@ var app = new Vue({
       }
       console.log(data);
       this.specTable = multiCartesian(data)
+    },
+    specImgUpload:function (event, index) {
+      uploadFiles('/upload/upload', event.target.files, function (data) {
+        console.log(data);
+        // 上传成功
+        if (data.code == 200) {
+            // console.log(that, that.dataset.img);
+            app.specTable[index]['img'] = data.other.suc[0]
+            if (data.other.err.length >=1) {
+              alert(data.other.err.jion(';'));
+            }
+            
+        }
+        // 上传错误
+        if (data.code == 400) {
+            alert(data.msg);
+        }
+
+      }, index);
     }
   }
 });
@@ -575,16 +594,60 @@ function deleteSpecs(sid, name) {
 }
 function ajaxRequest(url, data, func, dataType = 'json', type = 'GET') {
   $.ajax({
-      url: url,
-      data: data,
-      type: type, //'POST'
-      // success: function (data) {
-      //    return data;
-      // },
-      success: func,
-      dataType: dataType
-    });
+    url: url,
+    data: data,
+    type: type, //'POST'
+    // success: function (data) {
+    //    return data;
+    // },
+    success: func,
+    dataType: dataType
+  });
+}
+function uploadFiles(url, files, suc, index) {
+    // console.log(that, that.dataset.img);return;
+  var formData = new FormData();
+  console.log(files);
+  for (var i = 0, file; file = files[i]; ++i) {
+    formData.append(i, file);
   }
+  console.log(formData);
+  $.ajax({
+    url : url,
+    type : 'POST',
+    data : formData,
+    async : false,
+    processData : false,
+    contentType : false,
+    success : suc,
+    // function (data) {
+    //     console.log(data);
+    //     // 上传成功
+    //     if (data.code == 200) {
+    //         // console.log(that, that.dataset.img);
+    //         for (var i = 0; i < data.other.suc.length; i++) {
+    //           $('<img src="'+data.other.suc[i]+'" class="img-rounded '+that.dataset.classname+'"/>').appendTo($(that).next());
+    //           $('<input hidden type="text" name="'+that.dataset.inputname+'['+i+']" value = "'+data.other.suc[i]+'">').appendTo($(that).parent());
+    //         }
+    //         if (data.other.err.length >=1) {
+    //           alert(data.other.err.jion(';'));
+    //         }
+            
+    //     }
+    //     // 上传错误
+    //     if (data.code == 400) {
+    //         alert(data.msg);
+    //     }
+        
+    // },
+    error : function (data) {
+        console.log(data);
+        alert(data.msg);
+    }
+  })
+  
+}
+
 </script>
 
 <?php $this->endBlock(); ?>
