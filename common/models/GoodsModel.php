@@ -79,29 +79,43 @@ class GoodsModel extends \yii\db\ActiveRecord
     }
     public function addGoods($params)
     {
-        $this->c_id = $params['category'];
-        $this->g_id = implode(',', $params['groups']);
-        $this->name = $params['goodsName'];
-        $this->spec = empty($params['specification']) ? 0 : $params['specification'];
-        $this->wx_price = empty($params['goodsWxPrice']) ? 0 : $params['goodsWxPrice'];
-        $this->market_price = empty($params['goodsOriPrice']) ? 0 : $params['goodsOriPrice'];
-        $this->stores = empty($params['goodsStore']) ? 0 : $params['goodsStore'];
-        $this->barcode = empty($params['goodsNo']) ? '' : $params['goodsNo'];
-        $this->image = $params['goodsMasterImg'][0];
-        $this->desc = empty($params['describe']) ? 0 : $params['describe'];
-        $this->limit = empty($params['limitationvalue']) ? 9999999 : $params['limitationvalue'];
-        $this->location = empty($params['locationvaue']) ? '' : $params['locationvaue'];
+        $this->c_id = $params['cid'];
+        $gids = [];
+        foreach ($params['groupsValue'] as $key => $value) {
+            if ($value == 'true') {
+                $gids[] = $key;
+            }
+        }
+        $this->g_id = implode(',', $gids);
+        $this->name = $params['goodsNameValue'];
+        $this->spec = $params['pickedSpec'];
+        if ($this->spec == 1) {
+            // 多规格的
+        }else{
+            // 单规格的
+            $this->wx_price = empty($params['specSingle']['goodsWxPrice']) ? 0 : $params['specSingle']['goodsWxPrice'];
+            $this->market_price = empty($params['specSingle']['goodsOriPrice']) ? 0 : $params['specSingle']['goodsOriPrice'];
+            $this->stores = empty($params['specSingle']['goodsStore']) ? 0 : $params['specSingle']['goodsStore'];
+            $this->barcode = empty($params['specSingle']['goodsNo']) ? '' : $params['specSingle']['goodsNo'];
+        }
+        $this->image = $params['goodsMasterImgAttr'];
+        $this->desc = empty($params['describeAttr']) ? 0 : $params['describeAttr'];
+        $this->limit = empty($params['limitCount']) ? 9999999 : $params['limitCount'];
+        $this->location = empty($params['location']) ? '' : $params['location'];
         $this->is_bill = empty($params['bill']) ? 0 : $params['bill'];
         $this->is_repair = empty($params['repair']) ? 0 : $params['repair'];
         $this->is_on = empty($params['putaway']) ? 0 : $params['putaway'];
         $this->created_at = time();
         if ($this->save()) {
-            // 保存规格
-
+            // 保存多规格
+            // 如果是1则表示多规格
+            if ($params['pickedSpec'] == 1) {
+                
+            }
             // 保存其他图片
             $arr = [];
-            if (!empty($params['goodsOtherImg'])) {
-                foreach ($params['goodsOtherImg'] as $key => $value) {
+            if (!empty($params['goodsOtherImgAttrs'])) {
+                foreach ($params['goodsOtherImgAttrs'] as $key => $value) {
                     $arr[] = [$value, $this->id, 3];
                 }
                 
@@ -109,10 +123,10 @@ class GoodsModel extends \yii\db\ActiveRecord
             }
             if ($this->desc) {
                 if ($this->desc == 1) {
-                    $arr[] = [$params['describeText'], $this->id, 1];
+                    $arr[] = [$params['describeCont'], $this->id, 1];
                 }
                 if ($this->desc == 2) {
-                    foreach ($params['destImg'] as $key => $value) {
+                    foreach ($params['describeCont'] as $key => $value) {
                         $arr[] = [$value, $this->id, 2];
                     }
                 }
@@ -126,9 +140,9 @@ class GoodsModel extends \yii\db\ActiveRecord
             }
 
             // 保存属性值
-            if (!empty($params['attrs'])) {
+            if (!empty($params['attrsValue'])) {
                 $arr = [];
-                foreach ($params['attrs'] as $key => $value) {
+                foreach ($params['attrsValue'] as $key => $value) {
                     if (empty($value)) {
                         continue;
                     }

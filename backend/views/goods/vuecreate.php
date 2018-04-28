@@ -46,7 +46,7 @@ $this->title = '添加商品';
    <div id="append-attr" class="row col-sm-10">
      <div class="col-sm-2 col-md-3 border-style form-inline" v-for="(value, key) in attrs">
       <label for="add-attr-input">{{value}}</label>
-      <input id="input-add" class="form-control" placeholder="输入属性值" type="text" :name="'attrs['+key+']'">
+      <input id="input-add" v-model.trim="attrsValue[key]" class="form-control" placeholder="输入属性值" type="text" :name="'attrs['+key+']'">
      </div>
    </div>
    <div class="col-sm-offset-2">
@@ -76,7 +76,7 @@ $this->title = '添加商品';
    <div id="append-group" class="row col-sm-10">
      <div class="col-sm-2" v-for="item in groups">
          <label class="checkbox-inline">
-          <input type="checkbox" :name="'groups['+item.id+']'" :value="item.id"> {{item.name}}
+          <input type="checkbox" v-model="groupsValue[item.id]" :name="'groups['+item.id+']'" :value="item.id"> {{item.name}}
         </label>
      </div>
    </div>
@@ -104,7 +104,7 @@ $this->title = '添加商品';
 </div>
 <div class="row form-inline">
   <label class="col-sm-2 control-label" for="category">商品名称</label>
-  <input type="text" class="form-control" name="goodsName" placeholder="商品名称">
+  <input type="text" v-model.trim = 'goodsNameValue' class="form-control" name="goodsName" placeholder="商品名称">
 </div>
 <div class="row form-inline">
   <label class="col-sm-2 control-label" for="category">商品规格</label>
@@ -148,11 +148,13 @@ $this->title = '添加商品';
       <tr v-for="(item, index) in specTable" :class="index%2 == 0 ? 'active':'success'">
         <td>{{index+1}}</td>
         <td v-for="name in item">{{name}}</td>
-        <td><input type="file" :name="'specImg'+index" @change="specImgUpload($event,index)"><img src="specTable[index]['img']"></td>
+        <td><div style="width: 180px">
+          <input type="file" style="float: left;width: 75px" :name="'specImg'+index" @change="specImgUpload($event,index)"><img :id="'specImgShow'+index" style="float: left;width: 100px" src="">
+        </div></td>
         <td><input type="text" class="form-control" v-model="specTable[index]['price']" placeholder="销售价格"></td>
-        <td><input type="text" class="form-control" name="specTable[index]['goodsOriPrice']goodsOriPrice" placeholder="原价格"></td>
-        <td><input type="text" class="form-control" name="specTable[index]['goodsStore']" placeholder="库存"></td>
-        <td><input type="text" class="form-control" name="specTable[index]['goodsNo']" placeholder="商品条码"></td>
+        <td><input type="text" class="form-control" v-model="specTable[index]['goodsOriPrice']" placeholder="原价格"></td>
+        <td><input type="text" class="form-control" v-model="specTable[index]['goodsStore']" placeholder="库存"></td>
+        <td><input type="text" class="form-control" v-model="specTable[index]['goodsNo']" placeholder="商品条码"></td>
       </tr>
     </tbody>
   </table>
@@ -195,44 +197,70 @@ $this->title = '添加商品';
 <div v-show="pickedSpec == 0">
   <div class="row form-inline">
     <label class="col-sm-2 control-label" for="category">微信价(售价)</label>
-    <input type="text" class="form-control" name="goodsWxPrice" placeholder="销售价格">
+    <input type="text" class="form-control" name="goodsWxPrice" v-model="specSingle['goodsWxPrice']" placeholder="销售价格">
   </div>
   <div class="row form-inline">
     <label class="col-sm-2 control-label" for="category">原价(选填)</label>
-    <input type="text" class="form-control" name="goodsOriPrice" placeholder="原价格">
+    <input type="text" class="form-control" name="goodsOriPrice" v-model="specSingle['goodsOriPrice']" placeholder="原价格">
   </div>
   <div class="row form-inline">
     <label class="col-sm-2 control-label" for="category">商品条码(选填)</label>
-    <input type="text" class="form-control" name="goodsNo" placeholder="商品条码">
+    <input type="text" class="form-control" name="goodsNo"  v-model="specSingle['goodsNo']" placeholder="商品条码">
   </div>
   <div class="row form-inline">
     <label class="col-sm-2 control-label" for="category">库存</label>
-    <input type="text" class="form-control" name="goodsStore" placeholder="库存">
+    <input type="text" class="form-control" name="goodsStore"  v-model="specSingle['goodsStore']" placeholder="库存">
   </div>
 </div>
 <div class="row form-inline">
   <label class="col-sm-2 control-label" for="category">商品图片</label>
   <div class="col-sm-offset-2">
   <h5>主图 (建议尺寸为640像素*640像素，大小不超过500kb) </h5>
-  <input type="file" id="master-img" data-inputname = 'goodsMasterImg' data-classname = 'col-sm-2' />
+  <input type="file" id="master-img" data-inputname = 'goodsMasterImg' @change="goodsMasterImg" data-classname = 'col-sm-2' />
+  <img :src="goodsMasterImgAttr">
   <div class="clearfix"></div>
   <h5 class="clearfix">其它图片(选传，单张图片大小不超过500kb，最多10张)</h5>
-  <input type="file" id="other-img" multiple data-inputname = 'goodsOtherImg' data-classname = 'col-sm-2' />
-  <div></div>
+  <input type="file" id="other-img" multiple data-inputname = 'goodsOtherImg' @change="goodsOtherImg"  data-classname = 'col-sm-2' />
+
+  <div style="width: 200px">
+    <img v-for="item in goodsOtherImgAttrs" :src="item">
+  </div>
   </div>
 </div>
 <div class="row form-inline">
   <label class="col-sm-2 control-label" for="category">详情描述</label>
   <label class="radio-inline">
-    <input type="radio" name="describe" value="0"> 不设置
+    <input type="radio" name="describe" value="0" @click = 'describeAttr = 0'> 不设置
   </label>
   <label class="radio-inline">
-    <input type="radio" name="describe" value="1"> 文字
+    <input type="radio" name="describe" value="1" @click = "describe($event, 1)" data-toggle="modal" data-target="#add-desc-modal"> 文字
   </label>
   <label class="radio-inline">
-    <input type="radio" name="describe" value="2"> 图片
+    <input type="radio" name="describe" value="2" @click = "describe($event, 2)" data-toggle="modal" data-target="#add-desc-modal"> 图片
   </label>
 </div>
+<!-- 弹出框 -->
+<div id="add-desc-modal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">{{describeAttr == 1?'添加描述文字':'添加描述图片'}}</h4>
+      </div>
+      <div class="modal-body">
+        <textarea v-if="describeAttr == 1" v-model="describeContTemp" class="form-control" placeholder="输入描述内容" type="file" name="add-desc-input" rows="6"></textarea>
+        <input v-if="describeAttr == 2" multiple type="file" name="" @change = 'describeImg'>
+        <div v-if="describeAttr == 2">
+          <img v-for="item in describeContTemp" :src="item">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" @click = "addDesc">保存</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <div class="row">
   
 <div id='describeindex' class="row col-sm-4 col-sm-offset-2">
@@ -246,45 +274,45 @@ $this->title = '添加商品';
 <div class="row form-inline">
   <label class="col-sm-2 control-label" for="category">是否限购</label>
   <label class="radio-inline">
-    <input type="radio" name="limitation" value="0"> 不限购
+    <input type="radio" name="limitation" value="0" @click="limit = 0"> 不限购
   </label>
   <label class="radio-inline">
-    <input type="radio" name="limitation" value="1"> 限购
+    <input type="radio" name="limitation" value="1" @click="limit = 1"> 限购
   </label>
-  <input type="text" class="form-control" name="limitationvalue">
+  <input type="text" class="form-control" name="limitationvalue" v-model="limitCount">
 </div>
 <div class="row form-inline">
   <label class="col-sm-2 control-label" for="category">所在地</label>
-  <input type="text" class="form-control" name="locationvaue" />
+  <input type="text" class="form-control" name="locationvaue" v-model="location" />
 </div>
 <div class="row form-inline">
   <label class="col-sm-2 control-label" for="category">发票</label>
   <label class="radio-inline">
-    <input type="radio" name="bill" value="0"> 无
+    <input type="radio" name="bill" value="0" @click="bill = 0"> 无
   </label>
   <label class="radio-inline">
-    <input type="radio" name="bill" value="1"> 有
+    <input type="radio" name="bill" value="1" @click="bill = 1"> 有
   </label>
 </div>
 <div class="row form-inline">
   <label class="col-sm-2 control-label" for="category">保修</label>
   <label class="radio-inline">
-    <input type="radio" name="repair" value="0"> 无
+    <input type="radio" name="repair" value="0" @click="repair = 0"> 无
   </label>
   <label class="radio-inline">
-    <input type="radio" name="repair" value="1"> 有
+    <input type="radio" name="repair" value="1" @click="repair = 1"> 有
   </label>
 </div>
 <div class="row form-inline">
   <label class="col-sm-2 control-label" for="category">上架</label>
   <label class="radio-inline">
-    <input type="radio" name="putaway" value="0"> 暂不上架
+    <input type="radio" name="putaway" value="0" @click="putaway = 0"> 暂不上架
   </label>
   <label class="radio-inline">
-    <input type="radio" name="putaway" value="1"> 立即上架
+    <input type="radio" name="putaway" value="1" @click="putaway = 1"> 立即上架
   </label>
 </div>
-<button type="submit" class="btn btn-primary col-sm-offset-8">提交</button>
+<button type="button" class="btn btn-primary col-sm-offset-8" @click="submit">提交</button>
 </form>
 <?php $this->beginBlock('endbody'); ?>
 
@@ -292,12 +320,14 @@ $this->title = '添加商品';
 var app = new Vue({
   el: '#vueApp',// 根模板
   data: {
-    message: 'Hello Vue!',
     cid:"",// 分类id
     attrs:{},// 属性
+    attrsValue:{}, // 添加的属性值
     attrModel:true,// 是否显示添加属性弹窗
     addAttrValue:"",//添加的属性值 周转
+    goodsNameValue:"",// 商品名
     groups:<?=json_encode($groups) ;?>,// 为了方便，没写接口
+    groupsValue:[], // 分组值
     addGroupValue:"",// 添加的分组值 周转
     pickedSpec:0, // 选择的规格
     specs:[],// 存放已有的规格
@@ -311,6 +341,19 @@ var app = new Vue({
     specRequestEnd:0,// spec请求结束
     specTable:[], // table的渲染数据
     specTableHeader:[], // table的渲染数据
+    specSingle:{},//单规格的数据
+    goodsMasterImgAttr:'', // 主图
+    goodsOtherImgAttrs:[], // 辅助图
+    describeAttr:0,// 描述的类型
+    describeCont:[],// 描述的内容
+    describeContTemp:[],// 描述的内容 临时周转
+    limit:0,
+    limitCount:"",
+    location:"",
+    bill:0,
+    repair:0,
+    putaway:0,
+    
   },
   watch: {
 
@@ -382,7 +425,12 @@ var app = new Vue({
         }
       }
       console.log(data);
-      this.specTable = multiCartesian(data)
+      var specTable = multiCartesian(data);
+      for (var i = specTable.length - 1; i >= 0; i--) {
+        specTable[i]['img'] = "a";
+      }
+      // 加上图片字段
+      this.specTable = specTable;
     },
     specImgUpload:function (event, index) {
       uploadFiles('/upload/upload', event.target.files, function (data) {
@@ -390,7 +438,10 @@ var app = new Vue({
         // 上传成功
         if (data.code == 200) {
             // console.log(that, that.dataset.img);
-            app.specTable[index]['img'] = data.other.suc[0]
+            // 没用，还是用jq改吧
+            app.$set(app.specTable[index], "img", data.other.suc[0]);
+            $('#specImgShow'+index).attr('src', data.other.suc[0])
+            // app.specTable[index]['img'] = data.other.suc[0]
             if (data.other.err.length >=1) {
               alert(data.other.err.jion(';'));
             }
@@ -402,6 +453,90 @@ var app = new Vue({
         }
 
       }, index);
+    },
+    goodsMasterImg:function (event) {
+      uploadFiles('/upload/upload', event.target.files, function (data) {
+        console.log(data);
+        // 上传成功
+        if (data.code == 200) {
+            // console.log(that, that.dataset.img);
+
+            app.goodsMasterImgAttr = data.other.suc[0]
+            if (data.other.err.length >=1) {
+              alert(data.other.err.jion(';'));
+            }
+            
+        }
+        // 上传错误
+        if (data.code == 400) {
+            alert(data.msg);
+        }
+
+      });
+    },
+    goodsOtherImg:function (event) {
+      uploadFiles('/upload/upload', event.target.files, function (data) {
+        console.log(data);
+        // 上传成功
+        if (data.code == 200) {
+
+            for (var i = 0; i < data.other.suc.length; i++) {
+              app.goodsOtherImgAttrs.push(data.other.suc[i])
+            }
+            if (data.other.err.length >=1) {
+              alert(data.other.err.jion(';'));
+            }
+            
+        }
+        // 上传错误
+        if (data.code == 400) {
+            alert(data.msg);
+        }
+
+      });
+    },
+    describe:function (event, index) {
+      app.describeAttr = index;
+    },
+    describeImg:function (event) {
+      uploadFiles('/upload/upload', event.target.files, function (data) {
+        console.log(data);
+        // 上传成功
+        if (data.code == 200) {
+
+            for (var i = 0; i < data.other.suc.length; i++) {
+              app.describeContTemp.push(data.other.suc[i])
+
+            }
+            if (data.other.err.length >=1) {
+              alert(data.other.err.jion(';'));
+            }
+            
+        }
+        // 上传错误
+        if (data.code == 400) {
+            alert(data.msg);
+        }
+
+      });
+    },
+    addDesc:function () {
+      app.describeCont = app.describeContTemp;
+      // 隐藏弹窗
+        $("#add-desc-modal").modal("hide")
+    },
+    submit:function () {
+      var url = '/goods/add-goods';
+      var data = app.$data;
+      ajaxRequest(url, data, function (res) {
+        if (res.code == 200) {
+          result = res.other;
+          console.log(result);
+          app.attrs = result;
+        }else{
+          app.attrs = {};
+        }
+      }, 'json', 'POST');
     }
   }
 });

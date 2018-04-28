@@ -14,4 +14,8 @@ class TestController extends Controller
 	{
 		return json_encode(['code' => 200, 'msg' => 'ok']);
 	}
+	public function actionIp()
+	{
+		// var_dump($_SERVER);
+	}
 }

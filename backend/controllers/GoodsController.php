@@ -18,45 +18,46 @@ class GoodsController extends BaseController
 	}
 	public function actionCreate()
 	{
-		if ($_POST) {
-			$session = Yii::$app->session;
-			$params = $_POST;
-			$noError = true;
-			$models = new GoodsModel;
-			if (empty($params['category'])) {
-				$session->setFlash('error', '请选择分类');
-				$noError = false;
-			}
-			if (empty($params['goodsName'])) {
-				$session->setFlash('error', '请填写商品名称');
-				$noError = false;
-			}
-			if (empty($params['goodsMasterImg'])) {
-				$session->setFlash('error', '请上传主图');
-				$noError = false;
-			}
-			
-			if (!empty($params['limitation']) && $params['limitation'] == 1) {
-				if (empty($params['limitationvalue'])) {
-					$session->setFlash('error', '请填写商品限购量');
-					$noError = false;
-				}
-			}
-			if ($noError) {
-				$result = $models->addGoods($params);
-				if ($result) {
-					$this->redirect('/goods/index');return;
-				}else{
-					$session->setFlash('error', '添加失败');
-				}
-			}
-
-		}
+		
 		$groups = (new GroupsModel)->getGroups();
 		// json_encode的时候去掉索引
 		sort($groups);
 		// return $this->render('create', ['groups' =>$groups]);
 		return $this->render('vuecreate', ['groups' =>$groups]);
+	}
+	public function actionAddGoods()
+	{
+		if ($_POST) {
+			$params = $_POST;
+			$noError = true;
+			$error = [];
+			$models = new GoodsModel;
+			if (empty($params['cid'])) {
+				$error[] = '请选择分类';
+			}
+			if (empty($params['goodsNameValue'])) {
+				$error[] = '请输入商品名';
+			}
+			if (empty($params['goodsMasterImgAttr'])) {
+				$error[] = '请上传主图';
+			}
+			
+			if (!empty($params['limit']) && $params['limit'] == 1) {
+				if (empty($params['limitCount'])) {
+					$error[] = '请填写商品限购量';
+				}
+			}
+			if (empty($error)) {
+				// 添加商品
+				$result = $models->addGoods($params);
+				if ($result) {
+					// $this->redirect('/goods/index');return;
+				}else{
+					// $session->setFlash('error', '添加失败');
+				}
+			}
+
+		}
 	}
 	/**
 	 * 通过分类id获取分类所属的属性
