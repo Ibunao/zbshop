@@ -340,6 +340,7 @@ var app = new Vue({
     selectSpecs:{},
     specRequestEnd:0,// spec请求结束
     specTable:[], // table的渲染数据
+    apecSend:[], // 最终放的多规格的数据
     specTableHeader:[], // table的渲染数据
     specSingle:{},//单规格的数据
     goodsMasterImgAttr:'', // 主图
@@ -526,15 +527,41 @@ var app = new Vue({
         $("#add-desc-modal").modal("hide")
     },
     submit:function () {
+      // 处理规格数据
+      var specSend = [];
+      var temp = [];
+      for (var i = 0; i < app.specTable.length; i++) {
+        temp = [];
+        for (var key in app.specTable[i]) {
+          // console.log(key);
+          // 如果是数字就进行匹配
+          if (!isNaN(key)) {
+            for (var kk in  app.specs) {
+              for (var j = 0; j < app.specs[kk].length; j++) {
+                
+                  if (app.specs[kk][j].name == app.specTable[i][key]) {
+                    temp.push(app.specs[kk][j]);
+                  }
+                
+              }
+            }
+          }else{
+            var ding = {};
+            ding[key] = app.specTable[i][key];
+            temp.push(ding);
+          }
+        }
+        specSend.push(temp);
+      }
       var url = '/goods/add-goods';
       var data = app.$data;
+      data['specSend'] = specSend;
       ajaxRequest(url, data, function (res) {
         if (res.code == 200) {
           result = res.other;
-          console.log(result);
-          app.attrs = result;
+
         }else{
-          app.attrs = {};
+
         }
       }, 'json', 'POST');
     }

@@ -109,8 +109,15 @@ class GoodsModel extends \yii\db\ActiveRecord
         if ($this->save()) {
             // 保存多规格
             // 如果是1则表示多规格
+            $apec = [];
             if ($params['pickedSpec'] == 1) {
-                
+                foreach ($params['specSend'] as $key => $item) {
+                    // 规格组合部分
+                    $specArr = array_slice($item, 0, -5);
+                    foreach ($specArr as $key => $value) {
+                        
+                    }
+                }
             }
             // 保存其他图片
             $arr = [];

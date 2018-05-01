@@ -48,6 +48,7 @@ class GoodsController extends BaseController
 				}
 			}
 			if (empty($error)) {
+				echo json_encode($params['specSend']);exit;
 				// 添加商品
 				$result = $models->addGoods($params);
 				if ($result) {
