@@ -42,7 +42,7 @@ class GoodsModel extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['c_id', 'g_id', 'name', 'wx_price', 'market_price', 'stores', 'barcode', 'image', 'desc', 'created_at'], 'required'],
+            [['c_id', 'g_id', 'name', 'desc', 'created_at'], 'required'],
             [['c_id', 'stores', 'limit', 'created_at', 'updated_at'], 'integer'],
             [['wx_price', 'market_price'], 'number'],
             [['name', 'image'], 'string', 'max' => 255],
@@ -109,14 +109,45 @@ class GoodsModel extends \yii\db\ActiveRecord
         if ($this->save()) {
             // 保存多规格
             // 如果是1则表示多规格
-            $apec = [];
+            $spec = [];
+            
             if ($params['pickedSpec'] == 1) {
                 foreach ($params['specSend'] as $key => $item) {
                     // 规格组合部分
                     $specArr = array_slice($item, 0, -5);
+                    $specName = [];
+                    $sId = [];
+                    $svId = [];
                     foreach ($specArr as $key => $value) {
-                        
+                        $specName[] = $value['name'];
+                        $sId[] = $value['sid'];
+                        $svId[] = $value['svid'];
                     }
+                    // 剩余部分
+                    $img = $price = $goodsOriPrice = $goodsStore = $goodsNo = '';
+                    $specArr = array_slice($item, -5);
+                    foreach ($specArr as $key => $item) {
+                        if (isset($item['img'])) {
+                            $img = $item['img'];
+                        } elseif (isset($item['price'])) {
+                            $price = $item['price'];
+                        } elseif (isset($item['goodsOriPrice'])) {
+                            $goodsOriPrice = $item['goodsOriPrice'];
+                        } elseif (isset($item['goodsStore'])) {
+                            $goodsStore = $item['goodsStore'];
+                        } elseif (isset($item['goodsNo'])) {
+                            $goodsNo = $item['goodsNo'];
+                        }
+                    }
+                    $spec[] = ['sids' => implode(',', $sId), 's_v_ids' => implode(',', $svId), 's_v_name' => implode(',', $specName), 'g_id' => $this->id, 'image' => $img, 'price' => $price, 'store' => $goodsStore, 'barcode' => $goodsNo];
+                }
+                $result = Yii::$app->db     //选择使用的数据库
+                    ->createCommand()
+                    ->batchInsert('shop_goods_specifications',     //选择使用的表 
+                        ['sids', 's_v_ids', 's_v_name', 'g_id', 'image', 'price', 'store', 'barcode'],$spec)
+                    ->execute();
+                if (!$result) {
+                    var_dump('保存错误');
                 }
             }
             // 保存其他图片
