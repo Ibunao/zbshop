@@ -10,74 +10,84 @@ return [
     // 分类，初期为配置文件的形式。
     'categories' => [
     	1 => [
-    		'name' => '户外运动/登山野营/旅行装备',
+    		'name' => '户外运动',
     		'level' => 1,
     		'parentId' => 0,
     	],
     	2 => [
-    		'name' => '户外服装',
+    		'name' => '冲浪/滑水/翻版',
     		'level' => 2,
     		'parentId' => 1,
     	],
     	3 => [
-    		'name' => '冲锋衣裤',
+    		'name' => '鼻头',
     		'level' => 3,
     		'parentId' => 2,
     	],
     	4 => [
-    		'name' => '冲锋衣',
-    		'level' => 4,
-    		'parentId' => 3,
+    		'name' => '冲浪板',
+    		'level' => 3,
+    		'parentId' => 2,
     	],
     	5 => [
-    		'name' => '冲锋裤',
-    		'level' => 4,
-    		'parentId' => 3,
+    		'name' => '冲浪板背带',
+    		'level' => 3,
+    		'parentId' => 2,
     	],
     	6 => [
-    		'name' => '户外棉服',
+    		'name' => '舵',
     		'level' => 3,
     		'parentId' => 2,
     	],
     	7 => [
-    		'name' => '户外棉服',
-    		'level' => 4,
-    		'parentId' => 6,
-    	],
-    	7 => [
-    		'name' => '户外棉裤',
-    		'level' => 4,
-    		'parentId' => 6,
-    	],
-    	8 => [
-    		'name' => '户外鞋袜',
-    		'level' => 2,
-    		'parentId' => 1,
-    	],
-    	9 => [
-    		'name' => '户外袜子',
+    		'name' => '帆板',
     		'level' => 3,
-    		'parentId' => 8,
+    		'parentId' => 2,
     	],
-    	10 => [
-    		'name' => '户外鞋子',
-    		'level' => 3,
-    		'parentId' => 8,
-    	],
-    	11 => [
-    		'name' => '运动鞋',
+    	100 => [
+    		'name' => '户外装备',
     		'level' => 1,
     		'parentId' => 0,
     	],
-    	12 => [
-    		'name' => '运动篮球鞋',
+    	101 => [
+    		'name' => '户外服装',
     		'level' => 2,
-    		'parentId' => 11,
+    		'parentId' => 100,
     	],
-    	13 => [
-    		'name' => '运动跑步鞋',
+    	102 => [
+    		'name' => '冲锋衣裤',
+    		'level' => 3,
+    		'parentId' => 101,
+    	],
+    	103 => [
+    		'name' => '功能性内衣裤',
+    		'level' => 3,
+    		'parentId' => 101,
+    	],
+    	200 => [
+    		'name' => '户外活动',
+    		'level' => 1,
+    		'parentId' => 0,
+    	],
+    	201 => [
+    		'name' => '同城活动',
     		'level' => 2,
-    		'parentId' => 11,
+    		'parentId' => 200,
     	],
+    	202 => [
+    		'name' => '漂流',
+    		'level' => 3,
+    		'parentId' => 201,
+    	],
+        203 => [
+            'name' => '滑雪',
+            'level' => 3,
+            'parentId' => 201,
+        ],
+        204 => [
+            'name' => '温泉',
+            'level' => 3,
+            'parentId' => 201,
+        ],
     ],
 ];

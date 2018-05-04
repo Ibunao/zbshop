@@ -7,15 +7,43 @@ use common\models\AttributesModel;
 use common\models\GroupsModel;
 use common\models\GoodsModel;
 use common\models\SpecModel;
+use app\models\search\GoodsSearch;
+use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
 /**
  * 商品控制器
  */
 class GoodsController extends BaseController
 {
-	public function actionIndex()
-	{
-		return $this->render('index');
-	}
+	/**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Lists all GoodsModel models.
+     * @return mixed
+     */
+    public function actionIndex()
+    {
+        $searchModel = new GoodsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
 	public function actionCreate()
 	{
 		
@@ -52,9 +80,9 @@ class GoodsController extends BaseController
 				// 添加商品
 				$result = $models->addGoods($params);
 				if ($result) {
-					// $this->redirect('/goods/index');return;
+					return $this->redirect('/goods/index');
 				}else{
-					// $session->setFlash('error', '添加失败');
+					return $this->send(400, '添加失败');
 				}
 			}
 

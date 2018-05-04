@@ -27,6 +27,7 @@ $this->title = '添加商品';
   }
 </style>
 <?php $this->endBlock(); ?>
+
 <form action="/goods/create" method="post" onkeydown="if(event.keyCode==13){return false;}">
 <input name="_csrf" type="hidden" id="_csrf" value="<?= Yii::$app->request->csrfToken ?>">
 <div class="form-group">
@@ -131,6 +132,7 @@ $this->title = '添加商品';
      <button id="add-specs-button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-specs-modal">添加/修改规格</button>
   </div>
 </div>
+
 <div class="row" v-show="specRequestEnd == 1">
   <table class="table table-bordered">
     <thead>
@@ -320,6 +322,7 @@ $this->title = '添加商品';
 var app = new Vue({
   el: '#vueApp',// 根模板
   data: {
+    test:['dd'],
     cid:"",// 分类id
     attrs:{},// 属性
     attrsValue:{}, // 添加的属性值
@@ -416,7 +419,7 @@ var app = new Vue({
       this.specTableHeader = [];
       for (item in this.selectSpecs) {
         if (this.selectSpecs[item].value.length) {
-          if (this.selectSpecs[item].main) {
+          if (this.selectSpecs[item].main == 1) {
             data.unshift(this.selectSpecs[item].value);
             this.specTableHeader.unshift(item);
           }else{
@@ -561,7 +564,7 @@ var app = new Vue({
           result = res.other;
 
         }else{
-
+          alert('msg')
         }
       }, 'json', 'POST');
     }
