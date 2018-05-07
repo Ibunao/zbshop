@@ -16,8 +16,8 @@ class HttpHelper extends Object
         curl_setopt($ch, CURLOPT_URL, $url);
         //设置是直接打印出来 ture不打印
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true); // 跳过证书检查
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);  // 从证书中检查SSL加密算法是否存在
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // 跳过证书检查
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);  
         if ($type == 'post') {
             curl_setopt($ch, CURLOPT_POST, 1);//设置为post请求
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);//设置请求的参数
