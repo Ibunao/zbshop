@@ -44,7 +44,7 @@ class WxPay
     private function weixinapp() {  
         //统一下单接口  
         $unifiedorder = $this->unifiedorder();  
-//        print_r($unifiedorder);  
+       var_dump($unifiedorder);exit;
         $params = array(  
             'appId' => $this->appid, //小程序ID  
             'timeStamp' => '' . time() . '', //时间戳  
@@ -76,8 +76,10 @@ class WxPay
             'trade_type' => 'JSAPI'//交易类型  
         ];  
         // 计算签名  
-        $params['sign'] = $this->getSign($params);  
+        $params['sign'] = $this->getSign($params);
+        // var_dump($params);  
         $xmlData = $this->arrayToXml($params);  
+        var_dump($xmlData);//exit;
         $return = $this->xmlToArray($this->postXmlCurl($xmlData, $url, 60));  
         return $return;  
     }  
@@ -132,15 +134,16 @@ class WxPay
      * @return [type]      [description]
      */
     private function arrayToXml($arr) {  
-        $xml = "<root>";  
+        ksort($arr);
+        $xml = "<xml>";  
         foreach ($arr as $key => $val) {  
             if (is_array($val)) {  
-                $xml .= "<" . $key . ">" . $this->arrayToXml($val) . "</" . $key . ">";  
+                $xml .= "<" . $key . "><![CDATA[" . $this->arrayToXml($val) . "]]></" . $key . ">";  
             } else {  
-                $xml .= "<" . $key . ">" . $val . "</" . $key . ">";  
+                $xml .= "<" . $key . "><![CDATA[" . $val . "]]></" . $key . ">";  
             }  
         }  
-        $xml .= "</root>";  
+        $xml .= "</xml>";  
         return $xml;  
     }  
   
