@@ -10,7 +10,7 @@ use api\controllers\bases\BaseController;
 /**
  * Site controller
  */
-class SiteController extends BaseController
+class SiteController extends Controller
 {
 
     /**
