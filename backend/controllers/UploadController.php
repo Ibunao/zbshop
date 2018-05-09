@@ -18,7 +18,6 @@ class UploadController extends BaseController
         Yii::$app->response->format = 'json';
         $error = [];
         $success = [];
-        // var_dump($_FILES);exit;
         // 允许的格式
         $typeArr = ['image/jpeg', 'image/png', 'image/jpg'];
         foreach ($_FILES as $key => $value) {

@@ -41,10 +41,10 @@ class WxPay
         return $return;  
     }  
   	//微信小程序接口  
-    private function weixinapp() {  
+    public function weixinapp() {  
         //统一下单接口  
         $unifiedorder = $this->unifiedorder();  
-       var_dump($unifiedorder);exit;
+       // var_dump($unifiedorder);exit;
         $params = array(  
             'appId' => $this->appid, //小程序ID  
             'timeStamp' => '' . time() . '', //时间戳  
@@ -61,7 +61,7 @@ class WxPay
      * 调用微信统一下单接口
      * @return [type] [description]
      */
-    private function unifiedorder() {  
+    public function unifiedorder() {  
         $url = 'https://api.mch.weixin.qq.com/pay/unifiedorder';  
         $params = [
             'appid' => $this->appid, //小程序ID  
@@ -79,7 +79,7 @@ class WxPay
         $params['sign'] = $this->getSign($params);
         // var_dump($params);  
         $xmlData = $this->arrayToXml($params);  
-        var_dump($xmlData);//exit;
+        // var_dump($xmlData);//exit;
         $return = $this->xmlToArray($this->postXmlCurl($xmlData, $url, 60));  
         return $return;  
     }  
@@ -91,7 +91,7 @@ class WxPay
   	 * @param  integer $second [description]
   	 * @return [type]          [description]
   	 */
-    private static function postXmlCurl($xml, $url, $second = 30)   
+    public static function postXmlCurl($xml, $url, $second = 30)   
     {  
         $ch = curl_init();  
         //设置超时  
@@ -133,7 +133,7 @@ class WxPay
      * @param  [type] $arr [description]
      * @return [type]      [description]
      */
-    private function arrayToXml($arr) {  
+    public function arrayToXml($arr) {  
         ksort($arr);
         $xml = "<xml>";  
         foreach ($arr as $key => $val) {  
@@ -153,7 +153,7 @@ class WxPay
      * @param  [type] $xml xml数据
      * @return [type]      [description]
      */
-    private function xmlToArray($xml) {  
+    public function xmlToArray($xml) {  
   
   
         //禁止引用外部xml实体   
@@ -168,7 +168,7 @@ class WxPay
      * @param  integer $length [description]
      * @return [type]          [description]
      */
-    private function createNoncestr($length = 32) {  
+    public function createNoncestr($length = 32) {  
         $chars = "abcdefghijklmnopqrstuvwxyz0123456789";  
         $str = "";  
         for ($i = 0; $i < $length; $i++) {  
@@ -183,7 +183,7 @@ class WxPay
      * @param  Array $arr 生成签名的参数
      * @return [type]      [description]
      */
-    private function getSign($arr) {  
+    public function getSign($arr) {  
         foreach ($arr as $k => $v) {  
             $params[$k] = $v;  
         }  
@@ -207,7 +207,7 @@ class WxPay
      * @param  [type] $urlencode 是否urlencode转码
      * @return [type]            [description]
      */
-    private function formatBizQueryParaMap($params, $urlencode) {  
+    public function formatBizQueryParaMap($params, $urlencode) {  
         $buff = "";  
         ksort($params);  
         foreach ($params as $k => $v) {  

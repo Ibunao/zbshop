@@ -79,123 +79,135 @@ class GoodsModel extends \yii\db\ActiveRecord
     }
     public function addGoods($params)
     {
-        $this->c_id = $params['cid'];
-        $gids = [];
-        foreach ($params['groupsValue'] as $key => $value) {
-            if ($value == 'true') {
-                $gids[] = $key;
+        // $tr = Yii::$app->db->beginTransaction();
+        // try {
+            $this->c_id = $params['cid'];
+            $gids = [];
+            foreach ($params['groupsValue'] as $key => $value) {
+                if ($value == 'true') {
+                    $gids[] = $key;
+                }
             }
-        }
-        $this->g_id = implode(',', $gids);
-        $this->name = $params['goodsNameValue'];
-        $this->spec = $params['pickedSpec'];
-        if ($this->spec == 1) {
-            // 多规格的
-        }else{
-            // 单规格的
-            $this->wx_price = empty($params['specSingle']['goodsWxPrice']) ? 0 : $params['specSingle']['goodsWxPrice'];
-            $this->market_price = empty($params['specSingle']['goodsOriPrice']) ? 0 : $params['specSingle']['goodsOriPrice'];
-            $this->stores = empty($params['specSingle']['goodsStore']) ? 0 : $params['specSingle']['goodsStore'];
-            $this->barcode = empty($params['specSingle']['goodsNo']) ? '' : $params['specSingle']['goodsNo'];
-        }
-        $this->image = $params['goodsMasterImgAttr'];
-        $this->desc = empty($params['describeAttr']) ? 0 : $params['describeAttr'];
-        $this->limit = empty($params['limitCount']) ? 9999999 : $params['limitCount'];
-        $this->location = empty($params['location']) ? '' : $params['location'];
-        $this->is_bill = empty($params['bill']) ? 0 : $params['bill'];
-        $this->is_repair = empty($params['repair']) ? 0 : $params['repair'];
-        $this->is_on = empty($params['putaway']) ? 0 : $params['putaway'];
-        $this->created_at = time();
-        if ($this->save()) {
-            // 保存多规格
-            // 如果是1则表示多规格
-            $spec = [];
-            
-            if ($params['pickedSpec'] == 1) {
-                foreach ($params['specSend'] as $key => $item) {
-                    // 规格组合部分
-                    $specArr = array_slice($item, 0, -5);
-                    $specName = [];
-                    $sId = [];
-                    $svId = [];
-                    foreach ($specArr as $key => $value) {
-                        $specName[] = $value['name'];
-                        $sId[] = $value['sid'];
-                        $svId[] = $value['svid'];
+            $this->g_id = implode(',', $gids);
+            $this->name = $params['goodsNameValue'];
+            $this->spec = $params['pickedSpec'];
+            if ($this->spec == 1) {
+                // 多规格的
+            }else{
+                // 单规格的
+                $this->wx_price = empty($params['specSingle']['goodsWxPrice']) ? 0 : $params['specSingle']['goodsWxPrice'];
+                $this->market_price = empty($params['specSingle']['goodsOriPrice']) ? 0 : $params['specSingle']['goodsOriPrice'];
+                $this->stores = empty($params['specSingle']['goodsStore']) ? 0 : $params['specSingle']['goodsStore'];
+                $this->barcode = empty($params['specSingle']['goodsNo']) ? '' : $params['specSingle']['goodsNo'];
+            }
+            $this->image = $params['goodsMasterImgAttr'];
+            $this->desc = empty($params['describeAttr']) ? 0 : $params['describeAttr'];
+            $this->limit = empty($params['limitCount']) ? 9999999 : $params['limitCount'];
+            $this->location = empty($params['location']) ? '' : $params['location'];
+            $this->is_bill = empty($params['bill']) ? 0 : $params['bill'];
+            $this->is_repair = empty($params['repair']) ? 0 : $params['repair'];
+            $this->is_on = empty($params['putaway']) ? 0 : $params['putaway'];
+            $this->created_at = time();
+            if ($this->save()) {
+                // 保存多规格
+                // 如果是1则表示多规格
+                $spec = [];
+                
+                if ($params['pickedSpec'] == 1) {
+                    /**
+                     * 多规格要求价格等几个输入框必须填写，不然插入sql报错
+                     * @var [type]
+                     */
+                    foreach ($params['specSend'] as $key => $item) {
+                        // 规格组合部分
+                        $specArr = array_slice($item, 0, -5);
+                        $specName = [];
+                        $sId = [];
+                        $svId = [];
+                        foreach ($specArr as $key => $value) {
+                            $specName[] = $value['name'];
+                            $sId[] = $value['sid'];
+                            $svId[] = $value['svid'];
+                        }
+                        // 剩余部分
+                        $img = $price = $goodsOriPrice = $goodsStore = $goodsNo = '';
+                        $specArr = array_slice($item, -5);
+                        foreach ($specArr as $key => $item) {
+                            if (isset($item['img'])) {
+                                $img = $item['img'];
+                            } elseif (isset($item['price'])) {
+                                $price = $item['price'];
+                            } elseif (isset($item['goodsOriPrice'])) {
+                                $goodsOriPrice = $item['goodsOriPrice'];
+                            } elseif (isset($item['goodsStore'])) {
+                                $goodsStore = $item['goodsStore'];
+                            } elseif (isset($item['goodsNo'])) {
+                                $goodsNo = $item['goodsNo'];
+                            }
+                        }
+                        $spec[] = ['sids' => implode(',', $sId), 's_v_ids' => implode(',', $svId), 's_v_name' => implode(',', $specName), 'g_id' => $this->id, 'image' => $img, 'price' => $price, 'store' => $goodsStore, 'barcode' => $goodsNo];
                     }
-                    // 剩余部分
-                    $img = $price = $goodsOriPrice = $goodsStore = $goodsNo = '';
-                    $specArr = array_slice($item, -5);
-                    foreach ($specArr as $key => $item) {
-                        if (isset($item['img'])) {
-                            $img = $item['img'];
-                        } elseif (isset($item['price'])) {
-                            $price = $item['price'];
-                        } elseif (isset($item['goodsOriPrice'])) {
-                            $goodsOriPrice = $item['goodsOriPrice'];
-                        } elseif (isset($item['goodsStore'])) {
-                            $goodsStore = $item['goodsStore'];
-                        } elseif (isset($item['goodsNo'])) {
-                            $goodsNo = $item['goodsNo'];
+                    $result = Yii::$app->db     //选择使用的数据库
+                        ->createCommand()
+                        ->batchInsert('shop_goods_specifications',     //选择使用的表 
+                            ['sids', 's_v_ids', 's_v_name', 'g_id', 'image', 'price', 'store', 'barcode'],$spec)
+                        ->execute();
+                    if (!$result) {
+                        var_dump('保存错误');
+                    }
+                }
+                // 保存其他图片
+                $arr = [];
+                if (!empty($params['goodsOtherImgAttrs'])) {
+                    foreach ($params['goodsOtherImgAttrs'] as $key => $value) {
+                        $arr[] = [$value, $this->id, 3];
+                    }
+                    
+
+                }
+                if ($this->desc) {
+                    if ($this->desc == 1) {
+                        $arr[] = [$params['describeCont'], $this->id, 1];
+                    }
+                    if ($this->desc == 2) {
+                        foreach ($params['describeCont'] as $key => $value) {
+                            $arr[] = [$value, $this->id, 2];
                         }
                     }
-                    $spec[] = ['sids' => implode(',', $sId), 's_v_ids' => implode(',', $svId), 's_v_name' => implode(',', $specName), 'g_id' => $this->id, 'image' => $img, 'price' => $price, 'store' => $goodsStore, 'barcode' => $goodsNo];
-                }
-                $result = Yii::$app->db     //选择使用的数据库
-                    ->createCommand()
-                    ->batchInsert('shop_goods_specifications',     //选择使用的表 
-                        ['sids', 's_v_ids', 's_v_name', 'g_id', 'image', 'price', 'store', 'barcode'],$spec)
-                    ->execute();
-                if (!$result) {
-                    var_dump('保存错误');
-                }
-            }
-            // 保存其他图片
-            $arr = [];
-            if (!empty($params['goodsOtherImgAttrs'])) {
-                foreach ($params['goodsOtherImgAttrs'] as $key => $value) {
-                    $arr[] = [$value, $this->id, 3];
-                }
-                
-
-            }
-            if ($this->desc) {
-                if ($this->desc == 1) {
-                    $arr[] = [$params['describeCont'], $this->id, 1];
-                }
-                if ($this->desc == 2) {
-                    foreach ($params['describeCont'] as $key => $value) {
-                        $arr[] = [$value, $this->id, 2];
-                    }
-                }
-            }
-            if (!empty($arr)) {
-                $result = Yii::$app->db
-                ->createCommand()
-                ->batchInsert(GoodsOthersModel::tableName(), 
-                    ['value', 'g_id', 'type'], $arr)
-                ->execute();
-            }
-
-            // 保存属性值
-            if (!empty($params['attrsValue'])) {
-                $arr = [];
-                foreach ($params['attrsValue'] as $key => $value) {
-                    if (empty($value)) {
-                        continue;
-                    }
-                    $arr[] = [$key, $value, $this->id];
                 }
                 if (!empty($arr)) {
                     $result = Yii::$app->db
                     ->createCommand()
-                    ->batchInsert(GoodsAttributesModel::tableName(), 
-                        ['a_id', 'avalue', 'g_id'], $arr)
+                    ->batchInsert(GoodsOthersModel::tableName(), 
+                        ['value', 'g_id', 'type'], $arr)
                     ->execute();
                 }
+
+                // 保存属性值
+                if (!empty($params['attrsValue'])) {
+                    $arr = [];
+                    foreach ($params['attrsValue'] as $key => $value) {
+                        if (empty($value)) {
+                            continue;
+                        }
+                        $arr[] = [$key, $value, $this->id];
+                    }
+                    if (!empty($arr)) {
+                        $result = Yii::$app->db
+                        ->createCommand()
+                        ->batchInsert(GoodsAttributesModel::tableName(), 
+                            ['a_id', 'avalue', 'g_id'], $arr)
+                        ->execute();
+                    }
+                }
+                return true;
             }
-            return true;
-        }
+            // $tr->commit();
+        // } catch (Exception $e) {
+        //     //回滚
+        //     $tr->rollBack();
+        //     echo  "rollback";
+        // }
         var_dump($this->errors);exit;
         return false;
     }

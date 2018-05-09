@@ -17,4 +17,10 @@ class TestController extends BaseController
 	{
 		return ['code' => 200, 'msg' => 'sucess'];
 	}
+	public function actionCache()
+	{
+		// Yii::$app->cache->set('notify', 'ding');
+		// 微信异步通知消息
+		var_dump(Yii::$app->cache->get('notify-in'), Yii::$app->cache->get('notify'), Yii::$app->cache->get('notify-result'));
+	}
 }

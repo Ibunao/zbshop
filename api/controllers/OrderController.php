@@ -23,7 +23,7 @@ class OrderController extends BaseController
 		$openid = $request->post('openid');
 		$out_trade_no = (new TempModel)->buildOrderNo();
 		$body = '支付测试'; 
-		$total_fee = '0.01';
+		$total_fee = '1';// 分钱
 		$pay = new WxPay;
 		$result = $pay->pay($openid, $out_trade_no, $body, $total_fee);
 		return $this->send(200, 'success', $result);
@@ -34,8 +34,10 @@ class OrderController extends BaseController
 	 */
 	public function actionPayNotify()
 	{
-		$xml = $GLOBALS['HTTP_RAW_POST_DATA'];  
-      	Yii::$app->cache('notify', $xml);
+		// Yii::$app->cache->set('notify-in', true);
+		$xml = isset($GLOBALS['HTTP_RAW_POST_DATA']) ? $GLOBALS['HTTP_RAW_POST_DATA'] : file_get_contents("php://input");
+		// Yii::$app->cache->set('notify-here', true); 
+  //     	Yii::$app->cache->set('notify', $xml);
 	    //将服务器返回的XML数据转化为数组  
 	    $payModel = new WxPay;
 	    $data = $payModel->xmlToArray($xml);  
@@ -60,6 +62,7 @@ class OrderController extends BaseController
 	    }else{  
 	        $result = false;  
 	    }  
+	    // Yii::$app->cache->set('notify-result', $result);
 	    // 返回状态给微信服务器  
 	    if ($result) {  
 	        $str='<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';  

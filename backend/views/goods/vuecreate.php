@@ -171,7 +171,7 @@ $this->title = '添加商品';
       </div>
       <div class="modal-body">
         <label>添加规格名</label>
-        <input id="input-add" v-model.trim="addSpecsAttr.name" class="form-control" placeholder="输入规格名" type="text" name="add-specs-input">
+        <input id="input-add" v-model.trim="addSpecsAttr.name" class="form-control" placeholder="输入规格名" type="text" name="add-specs-input" @blur = 'getSpec'>
         <div class="checkbox">
           <label>
             <input type="checkbox" v-model="addSpecsAttr.main"> 勾选为主规格(如颜色等需要放不同展示图片的)
@@ -375,6 +375,9 @@ var app = new Vue({
     addGroups:function (event) {
       addGroups();
     },
+    getSpec:function (event) {
+      getSpec(event);
+    },
     getSpecs:function (event) {
       getSpecs();
     },
@@ -430,6 +433,14 @@ var app = new Vue({
       }
       console.log(data);
       var specTable = multiCartesian(data);
+      console.log(specTable);
+      if (!(specTable[0] instanceof Array)) {
+        var temp = [];
+        for (var i = 0; i < specTable.length; i++) {
+          temp.push([specTable[i]])
+        }
+        specTable = temp
+      }
       for (var i = specTable.length - 1; i >= 0; i--) {
         specTable[i]['img'] = "a";
       }
@@ -442,7 +453,7 @@ var app = new Vue({
         // 上传成功
         if (data.code == 200) {
             // console.log(that, that.dataset.img);
-            // 没用，还是用jq改吧
+            // 没用，还要用jq改吧
             app.$set(app.specTable[index], "img", data.other.suc[0]);
             $('#specImgShow'+index).attr('src', data.other.suc[0])
             // app.specTable[index]['img'] = data.other.suc[0]
@@ -684,6 +695,39 @@ function addGroups() {
   }
 }
 /**
+ * 获取一个规格下的值
+ * @param  {[type]} event [description]
+ * @return {[type]}       [description]
+ */
+function getSpec(event) {
+  console.log(event);
+  var cid = app.cid;
+
+  if (!cid) {
+    alert('请选择商品分类');
+    app.pickedSpec = 0;
+    return;
+  }
+  if (cid) {
+    app.pickedSpec = 1;
+    var url = '/goods/get-specs';
+    var data = {cid: cid};
+      if (event.target.value) {
+        data.name = event.target.value;
+        ajaxRequest(url, data, function (result) {
+          if (result.code == 200) {
+            console.log(result.other);
+            app.addSpecsAttr.values = [];
+            for (var i = result.other[event.target.value].length - 1; i >= 0; i--) {
+              app.addSpecsAttr.values.push(result.other[event.target.value][i]['name']);
+            }
+          }
+        });
+      // app.addSpecsAttr.values.push();
+      }
+  }
+}
+/**
  * 获取一个分类下的规格/或所有
  * @return {[type]} [description]
  */
@@ -736,7 +780,12 @@ function addSpecs() {
       if (result.code == 200) {
         console.log(result.other);
         $("#add-specs-modal").modal("hide")
-        app.addSpecsAttr = {};
+        app.addSpecsAttr = {// 添加的规格属性 周转
+            name:"",// 规格名
+            values:[], // 规格值
+            main:false, //是否为主规格
+          };
+        getSpecs();
       }else{
         alert(result.msg);
       }

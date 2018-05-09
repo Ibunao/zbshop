@@ -88,6 +88,20 @@ class SpecModel extends \yii\db\ActiveRecord
                 $model->need_img = $spec['main'];
                 $model->save(false);
             }
+            // 查询分类和规格的对应关系是否已经存在，如果不存在则添加  
+            $cs = (new Query)->from(['shop_categories_specifications'])
+                ->select(['id'])
+                ->where(["s_id" => $model->id, 'c_id' => $cid, 'disabled' => 0])
+                ->one();
+            if (empty($cs)) {
+                // 执行插入操作
+                $connection  = Yii::$app->db;
+                $result = $connection->createCommand()->insert('shop_categories_specifications', [
+                     'c_id' => $cid,
+                     's_id' => $model->id,
+                 ])->execute();
+            }
+                
             $specs = (new Query)->from(['shop_specification_values'])
                 ->select(['name'])
                 ->where(["p_id" => $model->id])
@@ -130,7 +144,7 @@ class SpecModel extends \yii\db\ActiveRecord
             ->leftJoin('shop_specifications s', 's.id = cs.s_id')
             ->leftJoin('shop_specification_values sv', 'sv.p_id = s.id')
             ->where(['cs.c_id' => $cid, 'sv.disabled' => 0, 'cs.disabled' => 0, 's.disabled' => 0])
-            ->filterWhere(['s.name' => $name])
+            ->andFilterWhere(['s.name' => $name])
             ->all();
         $response = [];
         foreach ($result as $item) {

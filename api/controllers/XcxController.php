@@ -19,7 +19,8 @@ class XcxController extends BaseController
 	 */
 	public function actionIndex($code)
 	{
-		$url = 'https://api.weixin.qq.com/sns/jscode2session?appid='.Yii::$app->params['wxconfig']['test']['app_id'].'&secret='.Yii::$app->params['wxconfig']['test']['app_secret'].'&js_code='.$code.'&grant_type=authorization_code';
+		$url = 'https://api.weixin.qq.com/sns/jscode2session?appid='.Yii::$app->params['wxconfig']['prod']['app_id'].'&secret='.Yii::$app->params['wxconfig']['prod']['app_secret'].'&js_code='.$code.'&grant_type=authorization_code';
+		// var_dump($url);exit;
 		$result = HttpHelper::httpCurl($url);
 		// 如果请求成功，存储openid和unionid的逻辑
 		if (isset($result['openid'])) {
@@ -30,7 +31,8 @@ class XcxController extends BaseController
 			// 返回openid
 			return ['code' => 200, 'openid' => $result['openid']];
 		}
-		return;
+		
+		return ['code' => 400, 'msg' => '获取openid失败'];;
 	}
 	/**
 	 * 保存用户信息
