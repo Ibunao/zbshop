@@ -101,7 +101,11 @@ class WchatHelper extends Object
                 if ($this->postObj->EventKey) {
                     $index = strrpos($this->postObj->EventKey, '_');
                     $sceneId = substr($this->postObj->EventKey, $index+1);
-                    (new CustomerModel)->Attention($sceneId, $this->fromUsername, true);
+                    // 获取unionid
+                    $openid = (string) $this->fromUsername;
+                    $result = $this->getUserInfo($openid);
+                    $unionid = isset($result['unionid'])?$result['unionid']:'';
+                    (new CustomerModel)->Attention($sceneId, $openid, true, $unionid);
                 }
                 // $this->sendImageText();
                 break;
@@ -472,5 +476,11 @@ class WchatHelper extends Object
         }
         return false;
     }
-    
+    public function getUserInfo($openid)
+    {
+        $token = $this->getToken();
+        $url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=".$token."&openid=".$openid."&lang=zh_CN";
+        $json_data = HttpHelper::httpCurl($url);
+        return $json_data;
+    }
 }

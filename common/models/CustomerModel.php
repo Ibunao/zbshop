@@ -40,7 +40,7 @@ class CustomerModel extends \yii\db\ActiveRecord
             ['password2', 'compare', 'compareAttribute'=>'password'],
             [['mobile', 'share_id', 'created_at', 'updated_at'], 'integer'],
             [['username', 'password'], 'string', 'max' => 60],
-            [['openid', 'unionid'], 'string', 'max' => 120],
+            [['openid', 'openid1', 'unionid'], 'string', 'max' => 120],
         ];
     }
 
@@ -81,23 +81,33 @@ class CustomerModel extends \yii\db\ActiveRecord
      * 关注的时候
      * @param string $value [description]
      */
-    public function Attention($sceneId, $openid, $check = false)
+    public function Attention($sceneId, $openid, $check = false, $unionid = '')
     {
         $success = false;
         if ($check) {
-            $model = self::findOne([
-                'openid' => $openid,
-            ]);
+            // 如果存在unionid(先登录了小程序，后关注微信公众号)，则是更新操作
+            $model = self::find()
+                ->where(['openid' => $openid])
+                ->orFilterWhere(['unionid' => $unionid])
+                ->one();
             if (!$model) {
                 $this->openid = $openid;
                 $this->created_at = time();
                 $this->share_id = $sceneId;
+                if (!empty($unionid)) {
+                    $this->unionid = $unionid;
+                }
                 $result = $this->save(false);
                 if ($result) {
                     $success = true;
                 }
+            // 如果存在unionid，更新,不带场景值
+            }elseif ($model->unionid) {
+                $model->openid = $openid;
+                $this->save(false);
             }
         }
+        // 给代理发送信息
         $model = AgentUserModel::findOne([
                 'id' => $sceneId,
             ]);
@@ -116,7 +126,30 @@ class CustomerModel extends \yii\db\ActiveRecord
         // 发送邀请成功通知。
         (new WchatHelper)->sendShareMessage($info);
     }
-
+    /**
+     * 根据unionid来绑定公众号openid和小程序的openid
+     * @param  [type] $openid  小程序openid
+     * @param  [type] $unionid 唯一标示
+     * @return [type]          [description]
+     */
+    public function xcxAttention($openid, $unionid)
+    {
+        if ($unionid) {
+            $model = self::find()
+                ->where(['unionid' => $unionid])
+                ->one();
+            if (!$model) {
+                $this->openid1 = $openid;
+                $this->created_at = time();
+                $this->unionid = $unionid;
+                $result = $this->save(false);
+            // 如果存在unionid，更新,不带场景值
+            }else {
+                $model->openid1 = $openid;
+                $this->save(false);
+            }
+        }
+    }
 
     /**
      * 获取代理人

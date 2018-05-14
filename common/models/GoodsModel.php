@@ -28,6 +28,8 @@ use common\models\GoodsOthersModel;
  */
 class GoodsModel extends \yii\db\ActiveRecord
 {
+    // 一页多少个
+    public $pageSize = 6;
     /**
      * @inheritdoc
      */
@@ -210,5 +212,32 @@ class GoodsModel extends \yii\db\ActiveRecord
         // }
         var_dump($this->errors);exit;
         return false;
+    }
+    public function getGoods($page, $arr = [], $order = [])
+    {
+        $model = self::find()->select(['id', 'wx_price', 'image', 'name']);
+        if ($arr) {
+            $model = $model->where($arr);
+        }
+        if (empty($order)) {
+            $model = $model->orderBy(['created_at' => SORT_DESC,]);
+        }else{
+            $model = $model->orderBy($order);
+        }
+        $model->limit($this->pageSize)->offset(($page-1)*$this->pageSize);
+        $result = $model->asArray()
+            ->all();
+        if (empty($result)) {
+            $result = [];
+        }
+        return $result;
+    }
+    public function getGoodsInfo($gid)
+    {
+        $result = self::find()->select(['*'])
+            ->where(['id' => $gid])
+            ->asArray()
+            ->one();
+        return $result;
     }
 }

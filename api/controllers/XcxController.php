@@ -2,11 +2,9 @@
 namespace api\controllers;
 
 use Yii;
-
-use yii\web\Controller;
 use api\controllers\bases\BaseController;
 use common\helpers\HttpHelper;
-
+use common\models\CustomerModel;
 /**
  * Site controller
  */
@@ -27,7 +25,10 @@ class XcxController extends BaseController
 			$unionid = isset($result['unionid'])?$result['unionid']:'';
 			$openid = $result['openid'];
 			$session_key = $result['session_key'];
-
+			// 测试
+			Yii::$app->cache->set('xcx-test-userinfo', ['openid' => $openid, 'unionid' => $unionid]);
+			// 根据unionid来绑定公众号openid和小程序的openid
+			(new CustomerModel)->xcxAttention($openid, $unionid);
 			// 返回openid
 			return ['code' => 200, 'openid' => $result['openid']];
 		}
@@ -60,6 +61,7 @@ class XcxController extends BaseController
 	}
 	public function actionCache()
 	{
-		var_dump(Yii::$app->cache->get('xcx-index'));
+		// var_dump(Yii::$app->cache->get('xcx-index'));
+		var_dump(Yii::$app->cache->get('xcx-test-userinfo'));
 	}
 }
