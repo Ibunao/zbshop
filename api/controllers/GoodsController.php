@@ -30,4 +30,8 @@ class GoodsController extends BaseController
 	{
 		return (new GoodsModel)->getGoodsInfo($gid);
 	}
+	public function actionSetCart($goodsId, $num, $specId = '')
+	{
+		return ['code' => 200];
+	}
 }

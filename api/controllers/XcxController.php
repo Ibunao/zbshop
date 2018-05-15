@@ -32,7 +32,7 @@ class XcxController extends BaseController
 			// 返回openid
 			return ['code' => 200, 'openid' => $result['openid']];
 		}
-		
+		var_dump($result);exit;
 		return ['code' => 400, 'msg' => '获取openid失败'];;
 	}
 	/**
