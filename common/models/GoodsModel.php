@@ -4,6 +4,7 @@ namespace common\models;
 
 use Yii;
 use common\models\GoodsOthersModel;
+use yii\db\Query;
 /**
  * This is the model class for table "{{%goods}}".
  *
@@ -147,12 +148,12 @@ class GoodsModel extends \yii\db\ActiveRecord
                                 $goodsNo = $item['goodsNo'];
                             }
                         }
-                        $spec[] = ['sids' => implode(',', $sId), 's_v_ids' => implode(',', $svId), 's_v_name' => implode(',', $specName), 'g_id' => $this->id, 'image' => $img, 'price' => $price, 'store' => $goodsStore, 'barcode' => $goodsNo];
+                        $spec[] = ['sids' => implode(',', $sId), 's_v_ids' => implode(',', $svId), 's_v_value' => implode(',', $specName), 'g_id' => $this->id, 'image' => $img, 'price' => $price, 'store' => $goodsStore, 'barcode' => $goodsNo];
                     }
                     $result = Yii::$app->db     //选择使用的数据库
                         ->createCommand()
                         ->batchInsert('shop_goods_specifications',     //选择使用的表 
-                            ['sids', 's_v_ids', 's_v_name', 'g_id', 'image', 'price', 'store', 'barcode'],$spec)
+                            ['sids', 's_v_ids', 's_v_value', 'g_id', 'image', 'price', 'store', 'barcode'],$spec)
                         ->execute();
                     if (!$result) {
                         var_dump('保存错误');
@@ -215,7 +216,8 @@ class GoodsModel extends \yii\db\ActiveRecord
     }
     public function getGoods($page, $arr = [], $order = [])
     {
-        $model = self::find()->select(['id', 'wx_price', 'image', 'name']);
+        $model = self::find()->select(['id', 'wx_price', 'image', 'name'])
+            ->andWhere(['is_on' => 1]);
         if ($arr) {
             $model = $model->where($arr);
         }
@@ -234,10 +236,56 @@ class GoodsModel extends \yii\db\ActiveRecord
     }
     public function getGoodsInfo($gid)
     {
+        $resp = [];
+        // 可选择的规格
+        $specCheck = [];
         $result = self::find()->select(['*'])
             ->where(['id' => $gid])
             ->asArray()
             ->one();
-        return $result;
+        // 多规格
+        if ($result && $result['spec'] == 1) {
+            $res1 = (new Query)->from('shop_goods_specifications')
+                ->where(['g_id' => $result['id']])
+                ->all();
+
+            foreach ($res1 as $key => $item) {
+                $spec = explode(',', $item['snames']);
+                $specValues = explode(',', $item['s_v_value']);
+                $specIds = explode(',', $item['s_v_ids']);
+                foreach ($spec as $key => $value) {
+                    $specCheck[$value][$specIds[$key]] = $specValues[$key];
+                }
+                $result['stores'] += $item['store'];
+                $result['specImg'][] = $item['image'];
+            }
+        }
+        // 其他图片
+        $otherImg = (new Query)->select(['value'])->from('shop_goods_others')
+            ->where(['g_id' => $gid])
+            ->column();
+        $resp['otherImg'] = $otherImg;
+        $resp['info'] = $result;
+        $result['specCheck'] = $specCheck;
+        if (isset($res1)) {
+            $resp['spec'] = $res1;
+        }
+        $attri = [];
+        // 属性  
+        $attriTemp = (new Query)->select(['ga.avalue', 'a.name'])->from('shop_attributes a')
+            ->leftJoin('shop_goods_attributes ga', 'ga.a_id = a.id')
+            ->where(['ga.g_id' => $gid])
+            ->all();
+        foreach ($attriTemp as $key => $value) {
+            $attri[$value['name']] = $value['avalue']; 
+        }
+        $resp['attri'] = $attri;
+        // 详情图片/文字描述
+        $detailImg = (new Query)->select('value')->from('shop_goods_others')
+            ->where(['g_id' => $gid])
+            ->andWhere(['type' => $result['desc']])
+            ->column();
+        $resp['detailImg'] = $detailImg;
+        return $resp;
     }
 }
