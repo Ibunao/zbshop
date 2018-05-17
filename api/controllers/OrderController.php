@@ -7,12 +7,32 @@ use api\controllers\bases\BaseController;
 use common\helpers\HttpHelper;
 use common\helpers\WxPay;
 use common\models\TempModel;
+use common\models\OrderModel;
 /**
  * 订单类
  * Site controller
  */
 class OrderController extends BaseController
 {
+	/**
+	 * 创建订单
+	 * @return [type] [description]
+	 */
+	public function actionCreate()
+	{
+		$data = json_decode(file_get_contents("php://input"), true);
+		if (!($data && isset($data['openid']) && isset($data['data']))) {
+			return $this->send(400, '参数错误');
+		}
+
+		$openid = $data['openid'];
+		$data = $data['data'];
+		
+		$result = (new OrderModel)->setOrder($openid, $data);
+		
+		// 检查数据创建订单
+		return $this->send(200, 'success', ['orderid' => $out_trade_no, 'data' => $data]);
+	}
 	/**
 	 * 微信支付
 	 * @return [type] [description]
@@ -21,7 +41,7 @@ class OrderController extends BaseController
 	{
 		$request = Yii::$app->request;
 		$openid = $request->post('openid');
-		$out_trade_no = (new TempModel)->buildOrderNo();
+		
 		$body = '支付测试'; 
 		$total_fee = '1';// 分钱
 		$pay = new WxPay;
