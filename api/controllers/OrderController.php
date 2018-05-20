@@ -27,11 +27,13 @@ class OrderController extends BaseController
 
 		$openid = $data['openid'];
 		$data = $data['data'];
-		
-		$result = (new OrderModel)->setOrder($openid, $data);
-		
 		// 检查数据创建订单
-		return $this->send(200, 'success', ['orderid' => $out_trade_no, 'data' => $data]);
+		$result = (new OrderModel)->setOrder($openid, $data);
+		if ($result) {
+			
+			return $this->send(200, 'success', ['orderid' => $result, 'data' => $data]);
+		}
+		return $this->send(400, 'fail');
 	}
 	/**
 	 * 微信支付
@@ -41,11 +43,15 @@ class OrderController extends BaseController
 	{
 		$request = Yii::$app->request;
 		$openid = $request->post('openid');
-		
-		$body = '支付测试'; 
-		$total_fee = '1';// 分钱
+		$orderid = $request->post('orderid');
+		$orderInfo = (new OrderModel)->getOrderInfo($orderid);
+		$body = $orderInfo['order_id']; 
+		$total_fee = ((float) $orderInfo['pay_price'])*100;// 分钱
+		if ($total_fee == 0) {
+			$total_fee = 1;// 最少支付一分钱
+		}
 		$pay = new WxPay;
-		$result = $pay->pay($openid, $out_trade_no, $body, $total_fee);
+		$result = $pay->pay($openid, $orderid, $body, $total_fee);
 		return $this->send(200, 'success', $result);
 	}
 	/**
@@ -77,7 +83,7 @@ class OrderController extends BaseController
 	        $transaction_id = $data['transaction_id'];  //微信支付流水号  
 	          
 	        //更新数据库  
-	        // ($order_sn,$openid,$total_fee,$transaction_id);  
+	        (new OrderModel)->wxNotify($order_sn, $openid, $total_fee, $transaction_id);  
 	          
 	    }else{  
 	        $result = false;  

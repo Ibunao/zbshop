@@ -40,14 +40,13 @@ class OrderModel extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'openid', 'order_id', 'price', 'express_fee', 'pay_price', 'name'], 'required'],
-            [['id', 'order_id', 'integrals', 'status', 'create_at', 'update_at'], 'integer'],
+            [['openid', 'order_id', 'price', 'express_fee', 'pay_price', 'name'], 'required'],
+            [['order_id', 'integrals', 'status', 'create_at', 'update_at'], 'integer'],
             [['price', 'express_fee', 'deduction', 'pay_price'], 'number'],
             [['openid', 'remark'], 'string', 'max' => 120],
             [['pay_id'], 'string', 'max' => 60],
             [['name', 'mobile'], 'string', 'max' => 30],
             [['address'], 'string', 'max' => 130],
-            [['id'], 'unique'],
         ];
     }
 
@@ -75,8 +74,86 @@ class OrderModel extends \yii\db\ActiveRecord
             'update_at' => 'Update At',
         ];
     }
+    /**
+     * 创建订单
+     * 验证金额的正确放在后台审核单子的时候
+     * @param [type] $openid [description]
+     * @param [type] $data   [description]
+     */
     public function setOrder($openid, $data)
     {
+        $this->openid = $openid;
         $orderId = (new TempModel)->buildOrderNo();
+        $this->order_id = $orderId;
+        $this->price = $data['original_price'];
+        $this->express_fee = $data['express_fee'];
+        $this->integrals = $data['useIntegrals'];
+        $this->deduction = $data['deduction'];
+        $this->pay_price = $data['totalPayment'];
+        $this->remark = $data['orderRemark'];
+        $this->status = 1;
+        $this->name = $data['selectAddress']['address_info']['name'];
+        $this->mobile = $data['selectAddress']['address_info']['contact'];
+        $this->address = $data['selectAddress']['address_info']['detailAddress'];
+        $this->create_at = time();
+        if ($this->save()) {
+            $orderItems = [];
+            // 保存订单商品详情
+            foreach ($data['goodsList'] as $key => $item) {
+                $orderItems[] = ['orderid' => $orderId, 'goodsid' => $item['id'], 'specid' => $item['specId'], 'price' => $item['price'], 'num' => $item['num'], 'specvalue' => $item['model_value_str']];
+            }
+            if (empty($orderItems)) {
+                var_dump('商品为空');
+                return false;
+            }
+            $result = Yii::$app->db 
+                ->createCommand()
+                ->batchInsert('shop_order_items', 
+                    ['orderid', 'goodsid', 'specid', 'price', 'num', 'specvalue'], 
+                    $orderItems)
+                ->execute();
+            if ($result) {
+                // 保存订单信息。
+                // Yii::$app->cache->set('order-'.$orderId, $data, 60*20*24);
+                return $orderId;
+            }
+            var_dump('商品为空');
+            return false;
+        }
+        var_dump($this->errors);
+        return false;
+    }
+    /**
+     * 获取订单信息
+     * @param  [type] $orderId [description]
+     * @return [type]          [description]
+     */
+    public function getOrderInfo($orderId)
+    {
+        return self::find()->where(['order_id' => $orderId])->asArray()->one();
+    }
+    /**
+     * 微信支付返回数据更新订单表
+     * @param  [type] $orderId  [description]
+     * @param  [type] $openid   [description]
+     * @param  [type] $payPrice [description]
+     * @param  [type] $payId    [description]
+     * @return [type]           [description]
+     */
+    public function wxNotify($orderId, $openid, $payPrice, $payId)
+    {
+        $model = self::find()->where(['order_id' => $orderId, 'openid' => $openid])->one();
+        $model->pay_id = $payId;
+        $model->status = $payPrice == $model->pay_price?2: ($payPrice == 1?2:4);
+        $model->update_at = time();
+        if ($model->save()) {
+            // 更新积分。
+
+            // 减库存
+            
+            return true;
+        }
+        var_dump($model->errors);
+        return false;
     }
 }
