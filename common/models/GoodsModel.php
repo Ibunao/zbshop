@@ -148,12 +148,12 @@ class GoodsModel extends \yii\db\ActiveRecord
                                 $goodsNo = $item['goodsNo'];
                             }
                         }
-                        $spec[] = ['sids' => implode(',', $sId), 's_v_ids' => implode(',', $svId), 's_v_value' => implode(',', $specName), 'g_id' => $this->id, 'image' => $img, 'price' => $price, 'store' => $goodsStore, 'barcode' => $goodsNo];
+                        $spec[] = ['sids' => implode(',', $sId),'snames' => implode(',', $params['specTableHeader']), 's_v_ids' => implode(',', $svId), 's_v_value' => implode(',', $specName), 'g_id' => $this->id, 'image' => $img, 'price' => $price, 'store' => $goodsStore, 'barcode' => $goodsNo];
                     }
                     $result = Yii::$app->db     //选择使用的数据库
                         ->createCommand()
                         ->batchInsert('shop_goods_specifications',     //选择使用的表 
-                            ['sids', 's_v_ids', 's_v_value', 'g_id', 'image', 'price', 'store', 'barcode'],$spec)
+                            ['sids', 'snames', 's_v_ids', 's_v_value', 'g_id', 'image', 'price', 'store', 'barcode'],$spec)
                         ->execute();
                     if (!$result) {
                         var_dump('保存错误');
@@ -248,6 +248,7 @@ class GoodsModel extends \yii\db\ActiveRecord
             $res1 = (new Query)->from('shop_goods_specifications')
                 ->where(['g_id' => $result['id']])
                 ->all();
+            // var_dump($res1);exit;
             foreach ($res1 as $key => $item) {
                 $spec = explode(',', $item['snames']);
                 $sids = explode(',', $item['sids']);
@@ -262,6 +263,8 @@ class GoodsModel extends \yii\db\ActiveRecord
                 $result['stores'] += $item['store'];
                 $result['specImg'][] = $item['image'];
             }
+        }else{
+            $result['specImg'] = [];
         }
         // 其他图片
         $otherImg = (new Query)->select(['value'])->from('shop_goods_others')

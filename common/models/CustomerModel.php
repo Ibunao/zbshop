@@ -143,7 +143,7 @@ class CustomerModel extends \yii\db\ActiveRecord
                 $this->created_at = time();
                 $this->unionid = $unionid;
                 $result = $this->save(false);
-            // 如果存在unionid，更新,不带场景值
+            // 如果存在unionid，更新
             }else {
                 $model->openid1 = $openid;
                 $this->save(false);

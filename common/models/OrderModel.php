@@ -100,7 +100,7 @@ class OrderModel extends \yii\db\ActiveRecord
             $orderItems = [];
             // 保存订单商品详情
             foreach ($data['goodsList'] as $key => $item) {
-                $orderItems[] = ['orderid' => $orderId, 'goodsid' => $item['id'], 'specid' => $item['specId'], 'price' => $item['price'], 'num' => $item['num'], 'specvalue' => $item['model_value_str']];
+                $orderItems[] = ['orderid' => $orderId, 'goodsid' => $item['id'], 'specid' => $item['specId']?:0, 'price' => $item['price'], 'num' => $item['num'], 'specvalue' => $item['model_value_str']];
             }
             if (empty($orderItems)) {
                 var_dump('商品为空');
