@@ -248,13 +248,16 @@ class GoodsModel extends \yii\db\ActiveRecord
             $res1 = (new Query)->from('shop_goods_specifications')
                 ->where(['g_id' => $result['id']])
                 ->all();
-
             foreach ($res1 as $key => $item) {
                 $spec = explode(',', $item['snames']);
+                $sids = explode(',', $item['sids']);
                 $specValues = explode(',', $item['s_v_value']);
                 $specIds = explode(',', $item['s_v_ids']);
+
                 foreach ($spec as $key => $value) {
-                    $specCheck[$value][$specIds[$key]] = $specValues[$key];
+                    $specCheck[$value]['subModelName'][$specIds[$key]] = $specValues[$key];
+                    $specCheck[$value]['name'] = $value;
+                    $specCheck[$value]['value'] = $sids[$key];
                 }
                 $result['stores'] += $item['store'];
                 $result['specImg'][] = $item['image'];
@@ -265,8 +268,8 @@ class GoodsModel extends \yii\db\ActiveRecord
             ->where(['g_id' => $gid])
             ->column();
         $resp['otherImg'] = $otherImg;
+        $result['specCheck'] = array_values($specCheck);
         $resp['info'] = $result;
-        $result['specCheck'] = $specCheck;
         if (isset($res1)) {
             $resp['spec'] = $res1;
         }

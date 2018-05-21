@@ -7,12 +7,34 @@ use api\controllers\bases\BaseController;
 use common\helpers\HttpHelper;
 use common\helpers\WxPay;
 use common\models\TempModel;
+use common\models\OrderModel;
 /**
  * 订单类
  * Site controller
  */
 class OrderController extends BaseController
 {
+	/**
+	 * 创建订单
+	 * @return [type] [description]
+	 */
+	public function actionCreate()
+	{
+		$data = json_decode(file_get_contents("php://input"), true);
+		if (!($data && isset($data['openid']) && isset($data['data']))) {
+			return $this->send(400, '参数错误');
+		}
+
+		$openid = $data['openid'];
+		$data = $data['data'];
+		// 检查数据创建订单
+		$result = (new OrderModel)->setOrder($openid, $data);
+		if ($result) {
+			
+			return $this->send(200, 'success', ['orderid' => $result, 'data' => $data]);
+		}
+		return $this->send(400, 'fail');
+	}
 	/**
 	 * 微信支付
 	 * @return [type] [description]
@@ -21,11 +43,15 @@ class OrderController extends BaseController
 	{
 		$request = Yii::$app->request;
 		$openid = $request->post('openid');
-		$out_trade_no = (new TempModel)->buildOrderNo();
-		$body = '支付测试'; 
-		$total_fee = '1';// 分钱
+		$orderid = $request->post('orderid');
+		$orderInfo = (new OrderModel)->getOrderInfo($orderid);
+		$body = $orderInfo['order_id']; 
+		$total_fee = ((float) $orderInfo['pay_price'])*100;// 分钱
+		if ($total_fee == 0) {
+			$total_fee = 1;// 最少支付一分钱
+		}
 		$pay = new WxPay;
-		$result = $pay->pay($openid, $out_trade_no, $body, $total_fee);
+		$result = $pay->pay($openid, $orderid, $body, $total_fee);
 		return $this->send(200, 'success', $result);
 	}
 	/**
@@ -57,7 +83,7 @@ class OrderController extends BaseController
 	        $transaction_id = $data['transaction_id'];  //微信支付流水号  
 	          
 	        //更新数据库  
-	        // ($order_sn,$openid,$total_fee,$transaction_id);  
+	        (new OrderModel)->wxNotify($order_sn, $openid, $total_fee, $transaction_id);  
 	          
 	    }else{  
 	        $result = false;  
