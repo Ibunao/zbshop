@@ -80,7 +80,7 @@ class GoodsController extends BaseController
 				// 添加商品
 				$result = $models->addGoods($params);
 				if ($result) {
-					// return $this->redirect('/goods/index');
+					return $this->redirect('/goods/index');
 				}else{
 					return $this->send(400, '添加失败');
 				}

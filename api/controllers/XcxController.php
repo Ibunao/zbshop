@@ -61,7 +61,7 @@ class XcxController extends BaseController
 	}
 	public function actionGetHomePage()
 	{
-		$host = 'http://admin.zbshop.com';
+		$host = 'http://admin.quutuu.com';
 		// 轮播
 		$result['carousel'] = [
 			['pic' => $host.'/images/carousel/file_5966e5a206bec.png'],
@@ -82,10 +82,10 @@ class XcxController extends BaseController
 		];
 		// 商品。
 		$result['goods'] = [
-			['image' => 'http://admin.quutuu.com/images/goods/1525860884209169.png','goodsId' => 28, 'name' => "2017新款冲锋衣三合一两件套男女情侣款户外服装", 'about' => '分类：冲锋', 'price' => 110, 'gid'=>36],
-			['image' => 'http://admin.quutuu.com/images/goods/1525860884209169.png','goodsId' => 28, 'name' => "2017新款冲锋衣三合一两件套男女情侣款户外服装", 'about' => '分类：冲锋', 'price' => 110, 'gid'=>36],
-			['image' => 'http://admin.quutuu.com/images/goods/1525860884209169.png','goodsId' => 28, 'name' => "2017新款冲锋衣三合一两件套男女情侣款户外服装", 'about' => '分类：冲锋', 'price' => 110, 'gid'=>36],
-			['image' => 'http://admin.quutuu.com/images/goods/1525860884209169.png','goodsId' => 28, 'name' => "2017新款冲锋衣三合一两件套男女情侣款户外服装", 'about' => '分类：冲锋', 'price' => 110, 'gid'=>36],
+			['image' => 'http://admin.quutuu.com/images/goods/1525860884209169.png','goodsId' => 28, 'name' => "2017新款冲锋衣三合一两件套男女情侣款户外服装", 'about' => '分类：冲锋', 'price' => 110, 'id'=>36],
+			['image' => 'http://admin.quutuu.com/images/goods/1525860884209169.png','goodsId' => 28, 'name' => "2017新款冲锋衣三合一两件套男女情侣款户外服装", 'about' => '分类：冲锋', 'price' => 110, 'id'=>36],
+			['image' => 'http://admin.quutuu.com/images/goods/1525860884209169.png','goodsId' => 28, 'name' => "2017新款冲锋衣三合一两件套男女情侣款户外服装", 'about' => '分类：冲锋', 'price' => 110, 'id'=>36],
+			['image' => 'http://admin.quutuu.com/images/goods/1525860884209169.png','goodsId' => 28, 'name' => "2017新款冲锋衣三合一两件套男女情侣款户外服装", 'about' => '分类：冲锋', 'price' => 110, 'id'=>36],
 		];
 		return $this->send(200, '', $result);
 	}

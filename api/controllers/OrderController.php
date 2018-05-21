@@ -98,4 +98,11 @@ class OrderController extends BaseController
 	    echo $str;  
 	    // return $result;  
 	}
+	public function actionCondition()
+	{
+		$request = Yii::$app->request;
+		$openid = $request->get('openid');
+		$result = (new OrderModel)->orderCondition($openid);
+		return $this->send(200, '', $result);
+	}
 }

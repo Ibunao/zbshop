@@ -121,6 +121,8 @@ class GoodsModel extends \yii\db\ActiveRecord
                      * 多规格要求价格等几个输入框必须填写，不然插入sql报错
                      * @var [type]
                      */
+                    $priceArr = [];
+                    $stores = 0;
                     foreach ($params['specSend'] as $key => $item) {
                         // 规格组合部分
                         $specArr = array_slice($item, 0, -5);
@@ -148,8 +150,14 @@ class GoodsModel extends \yii\db\ActiveRecord
                                 $goodsNo = $item['goodsNo'];
                             }
                         }
+                        // 计算多规格的价格和库存
+                        $priceArr[] = $price;
+                        $stores += $goodsStore;
                         $spec[] = ['sids' => implode(',', $sId),'snames' => implode(',', $params['specTableHeader']), 's_v_ids' => implode(',', $svId), 's_v_value' => implode(',', $specName), 'g_id' => $this->id, 'image' => $img, 'price' => $price, 'store' => $goodsStore, 'barcode' => $goodsNo];
                     }
+                    $this->wx_price = min($priceArr);
+                    $this->stores = $stores;
+                    $this->save(false);
                     $result = Yii::$app->db     //选择使用的数据库
                         ->createCommand()
                         ->batchInsert('shop_goods_specifications',     //选择使用的表 

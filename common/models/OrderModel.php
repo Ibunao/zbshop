@@ -156,4 +156,24 @@ class OrderModel extends \yii\db\ActiveRecord
         var_dump($model->errors);
         return false;
     }
+    public function orderCondition($openid)
+    {
+        $result = ['daifu'=>0, 'daifa'=>0, 'daishou'=>0, 'daiping' => 0];
+        $temp = self::find()->where(['openid' => $openid])->asArray()->all();
+        if (empty($temp)) {
+            return $result;
+        }
+        // 目前先只管代发货和确认收货的。
+        foreach ($temp as $key => $item) {
+            // 代发货
+            if ($item['status'] == 2) {
+                $result['daifa'] +=1;
+            }
+            // 待确认收货
+            if ($item['status'] == 5) {
+                $result['daishou'] +=1;
+            }
+        }
+        return $result;
+    }
 }
