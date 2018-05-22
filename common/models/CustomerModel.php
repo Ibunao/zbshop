@@ -104,10 +104,10 @@ class CustomerModel extends \yii\db\ActiveRecord
             // 如果存在unionid，更新,不带场景值
             }elseif ($model->unionid) {
                 $model->openid = $openid;
-                $this->save(false);
+                $model->save(false);
             }else{
                 $model->unionid = $unionid;
-                $this->save(false);
+                $model->save(false);
             }
         }
         // 给代理发送信息
@@ -149,7 +149,7 @@ class CustomerModel extends \yii\db\ActiveRecord
             // 如果存在unionid，更新
             }else {
                 $model->openid1 = $openid;
-                $this->save(false);
+                $model->save(false);
             }
         }
     }

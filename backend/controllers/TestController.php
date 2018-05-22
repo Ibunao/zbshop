@@ -12,10 +12,10 @@ class TestController extends Controller
 	public $enableCsrfValidation = false;
 	public function actionTest()
 	{
-		$sceneId = '1';
-		$openid = 'oCSMd0obtXDxrhvuExl0J14jzaSQ';
-		$unionid = 'oR2lB0RvBH3MXFXc2xgnXPpXhUhI';
-		(new CustomerModel)->Attention($sceneId, $openid, true, $unionid);
+		// $sceneId = '1';
+		// $openid = 'oCSMd0obtXDxrhvuExl0J14jzaSQ';
+		// $unionid = 'oR2lB0RvBH3MXFXc2xgnXPpXhUhI';
+		// (new CustomerModel)->Attention($sceneId, $openid, true, $unionid);
 	}
 	public function actionIp()
 	{

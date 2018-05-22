@@ -5,6 +5,7 @@ use Yii;
 use api\controllers\bases\BaseController;
 use common\helpers\HttpHelper;
 use common\models\CustomerModel;
+use common\helpers\xcx\WXBizDataCrypt;
 /**
  * Site controller
  */
@@ -25,8 +26,7 @@ class XcxController extends BaseController
 			$unionid = isset($result['unionid'])?$result['unionid']:'';
 			$openid = $result['openid'];
 			$session_key = $result['session_key'];
-			// 测试
-			Yii::$app->cache->set('xcx-test-userinfo', ['openid' => $openid, 'unionid' => $unionid]);
+			Yii::$app->cache->set('xcx-userinfo-'.$openid, ['openid' => $openid, 'unionid' => $unionid, 'session_key' => $result['session_key']]);
 			// 根据unionid来绑定公众号openid和小程序的openid
 			(new CustomerModel)->xcxAttention($openid, $unionid);
 			// 返回openid
@@ -42,16 +42,27 @@ class XcxController extends BaseController
 	public function actionSaveUserInfo()
 	{
 		$request = Yii::$app->request;
-		$nickName = $request->post('nickName');
-		$avatarUrl = $request->post('avatarUrl');
-		$city = $request->post('city');
-		$country = $request->post('country');
-		$gender = $request->post('gender');
-		$province = $request->post('province');
+		$userInfo = $request->post('userInfo');
+		$rawData = $request->post('rawData');
+		$signature = $request->post('signature');
+		$encryptedData = $request->post('encryptedData');
+		$iv = $request->post('iv');
 		$openid = $request->post('openid');
-		$unionid = $request->post('unionid');
+		// 获取unionid  
+		$data = Yii::$app->cache->get('xcx-userinfo-'.$openid);
+		if (!$data) {
+			return $this->send(400, "数据错误", $_POST);
+		}
 		// 存储
-		
+		if(!$data['unionid']){
+			$pc = new WXBizDataCrypt(Yii::$app->params['wxconfig']['prod']['app_id'], $data['session_key']);
+			$errCode = $pc->decryptData($encryptedData, $iv, $decodeDatas);
+			if(isset($decodeDatas['unionid'])){
+				// 根据unionid来绑定公众号openid和小程序的openid
+				(new CustomerModel)->xcxAttention($openid, $decodeDatas['unionid']);
+			}
+			return $this->send(200, "添加成功", ['code' => $errCode, 'data' => $decodeDatas]);
+		}
 		// var_dump(json_decode($userInfo), $_POST, file_get_contents("php://input"));exit;
 		return $this->send(200, "添加成功", $_POST);
 	}
