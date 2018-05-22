@@ -105,6 +105,9 @@ class CustomerModel extends \yii\db\ActiveRecord
             }elseif ($model->unionid) {
                 $model->openid = $openid;
                 $this->save(false);
+            }else{
+                $model->unionid = $unionid;
+                $this->save(false);
             }
         }
         // 给代理发送信息
