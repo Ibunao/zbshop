@@ -30,6 +30,13 @@ class GoodsController extends BaseController
 	{
 		return (new GoodsModel)->getGoodsInfo($gid);
 	}
+	/**
+	 * 存放购物车
+	 * @param  [type] $goodsId [description]
+	 * @param  [type] $num     [description]
+	 * @param  string $specId  [description]
+	 * @return [type]          [description]
+	 */
 	public function actionSetCart($goodsId, $num, $specId = '')
 	{
 		return ['code' => 200];

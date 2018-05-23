@@ -4,6 +4,11 @@ namespace common\models;
 
 use Yii;
 use common\models\TempModel;
+use common\models\CustomerModel;
+use common\models\IntegralsModel;
+use common\models\OrderItemsModel;
+use common\models\GoodsSpecificationsModel;
+use common\models\GoodsModel;
 /**
  * This is the model class for table "{{%order}}".
  *
@@ -142,15 +147,70 @@ class OrderModel extends \yii\db\ActiveRecord
      */
     public function wxNotify($orderId, $openid, $payPrice, $payId)
     {
+        // 因为会回调很多次，防止重复
+        if (Yii::$app->cache->get('xcx-wxnotify'.$orderId)) {
+            return;
+        }
         $model = self::find()->where(['order_id' => $orderId, 'openid' => $openid])->one();
         $model->pay_id = $payId;
         $model->status = $payPrice == $model->pay_price?2: ($payPrice == 1?2:4);
         $model->update_at = time();
         if ($model->save()) {
-            // 更新积分。
-
-            // 减库存
-            
+            if ($model->status == 2) {
+                // 更新积分。
+                // 减去使用的积分
+                $useIntegrals = $model->integrals;
+                if ($useIntegrals) {
+                    $customer = CustomerModel::findOne(['openid1' => $openid]);
+                    $old = $customer->integrals;
+                    $customer->updateCounters(['integrals' => -$useIntegrals]);
+                    // 记录积分变动
+                    $integralsModel = new IntegralsModel;
+                    $integralsModel->old = $old;
+                    $integralsModel->change = $useIntegrals;
+                    $integralsModel->new = $old-$useIntegrals;
+                    $integralsModel->remark = '支付使用积分';
+                    $integralsModel->create_at = time();
+                    $integralsModel->save();
+                }
+                
+                // 加上支付成功赠送的积分
+                // 用户信息主表更新
+                // 测试时加10
+                $integrals = 10;floor($model->pay_price/100);
+                if ($integrals) {
+                    $customer = CustomerModel::findOne(['openid1' => $openid]);
+                    $old = $customer->integrals;
+                    $customer->updateCounters(['integrals' => $integrals]);
+                    // 记录积分变动
+                    $integralsModel = new IntegralsModel;
+                    $integralsModel->old = $old;
+                    $integralsModel->change = $integrals;
+                    $integralsModel->new = $old+$integrals;
+                    $integralsModel->remark = '支付成功赠送积分';
+                    $integralsModel->create_at = time();
+                    $integralsModel->save();
+                }
+                // 库存
+                $items = (new OrderItemsModel)->find()->select(['goodsid', 'specid', 'num'])->where(['orderid' => $orderId])->asArray()->all();
+                $goods = [];
+                foreach ($items as $key => $item) {
+                    if (!isset($goods[$item['goodsid']])) {
+                        $goods[$item['goodsid']] = 0;
+                    }
+                    $goods[$item['goodsid']] += $item['num'];
+                    // 过滤掉单一规格的
+                    if ($item['specid']) {
+                        $goodsSpec = (new GoodsSpecificationsModel)->findOne($item['specid']);
+                        $goodsSpec->updateCounters(['store' => -$item['num']]);
+                    }
+                }
+                foreach ($goods as $gid => $num) {
+                    $goods = (new GoodsModel)->findOne($gid);
+                    $goods->updateCounters(['stores' => -$num]);
+                }
+            }
+            Yii::$app->cache->set('xcx-wxnotify'.$orderId, true);
             return true;
         }
         var_dump($model->errors);

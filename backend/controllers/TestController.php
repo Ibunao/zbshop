@@ -19,6 +19,6 @@ class TestController extends Controller
 	}
 	public function actionIp()
 	{
-		// var_dump($_SERVER);
+		var_dump($_SERVER);
 	}
 }

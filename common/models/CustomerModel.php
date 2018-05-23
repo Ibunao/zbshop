@@ -166,5 +166,21 @@ class CustomerModel extends \yii\db\ActiveRecord
         }
         return "自关注";
     }
-
+    /**
+     * 获取积分
+     * @param  [type] $openid [description]
+     * @return [type]         [description]
+     */         
+    public function getIntegral($openid)
+    {
+        $result = self::find()
+            ->select(['integrals'])
+            ->where(['openid1' => $openid])
+            ->asArray()
+            ->one();
+        if ($result) {
+            return $result['integrals'];
+        }
+        return 0;
+    }
 }

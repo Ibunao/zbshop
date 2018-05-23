@@ -66,10 +66,19 @@ class XcxController extends BaseController
 		// var_dump(json_decode($userInfo), $_POST, file_get_contents("php://input"));exit;
 		return $this->send(200, "添加成功", $_POST);
 	}
-	public function actionGetIntegral()
+	/**
+	 * 获取积分
+	 * @return [type] [description]
+	 */
+	public function actionGetIntegral($openid)
 	{
-		return $this->send(200, '', ['integral' => 666]);
+		$result = (new CustomerModel)->getIntegral($openid);
+		return $this->send(200, '', ['integral' => $result]);
 	}
+	/**
+	 * 首页的数据
+	 * @return [type] [description]
+	 */
 	public function actionGetHomePage()
 	{
 		$host = 'http://admin.quutuu.com';
