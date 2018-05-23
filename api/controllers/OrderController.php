@@ -105,4 +105,26 @@ class OrderController extends BaseController
 		$result = (new OrderModel)->orderCondition($openid);
 		return $this->send(200, '', $result);
 	}
+	/**
+	 * 待支付待发货等。待系列
+	 * @return [type] [description]
+	 */
+	public function actionDaiinfo()
+	{
+		$request = Yii::$app->request;
+		$type = $request->post('type');
+		if($type == 'daifa'){
+			$result = (new OrderModel)->daiInfo(['status' => 2, 'ship_status' => 0]);
+		} elseif ($type == 'daifu') {
+			$result = [];
+		} elseif ($type == 'daishou') {
+			$result = (new OrderModel)->daiInfo(['status' => 2, 'ship_status' => 1]);
+		} elseif ($type == 'daiping') {
+			$result = [];
+		// 所有
+		} else {
+			$result = [];
+		}	
+		return $this->send(200, '', $result);
+	}
 }

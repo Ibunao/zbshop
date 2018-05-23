@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\db\Query;
 use common\models\TempModel;
 use common\models\CustomerModel;
 use common\models\IntegralsModel;
@@ -216,6 +217,11 @@ class OrderModel extends \yii\db\ActiveRecord
         var_dump($model->errors);
         return false;
     }
+    /**
+     * 获取用户的订单情况
+     * @param  [type] $openid [description]
+     * @return [type]         [description]
+     */
     public function orderCondition($openid)
     {
         $result = ['daifu'=>0, 'daifa'=>0, 'daishou'=>0, 'daiping' => 0];
@@ -235,5 +241,32 @@ class OrderModel extends \yii\db\ActiveRecord
             }
         }
         return $result;
+    }
+    /**
+     * 获取订单中心的某一类订单
+     * @param  [type] $type [description]
+     * @return [type]         [description]
+     */
+    public function daiInfo($where)
+    {
+        $result = [];
+        $temp = self::find()->where($where)->asArray()->indexBy('order_id')->all();
+        if (empty($temp)) {
+            return $result;
+        }
+        $orderIds = [];
+        // 目前先只管代发货和确认收货的。
+        foreach ($temp as $key => $item) {
+            $orderIds[] = $item['order_id'];
+        }
+        $goodsItem = (new Query)->from('shop_order_items oi')
+            ->leftJoin('shop_goods g', 'g.id = oi.goodsid')
+            ->where(['in', 'oi.orderid', $orderIds])
+            ->all();
+        foreach ($goodsItem as $key => $item) {
+            $temp[$item['orderid']]['items'][] = $item;
+        }
+        sort($temp);
+        return $temp;
     }
 }
