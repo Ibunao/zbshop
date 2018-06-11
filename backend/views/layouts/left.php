@@ -38,6 +38,7 @@
                         'items' => [
                             ['label' => '商品列表', 'icon' => 'file-code-o', 'url' => ['/goods/index'],],
                             ['label' => '添加商品', 'icon' => 'dashboard', 'url' => ['/goods/create'],],
+                            ['label' => '分类设置', 'icon' => 'dashboard', 'url' => ['/cate/index'],],
                             [
                                 'label' => '待添加',
                                 'icon' => 'circle-o',

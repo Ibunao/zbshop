@@ -10,6 +10,10 @@ use common\models\CustomerModel;
 class TestController extends Controller
 {
 	public $enableCsrfValidation = false;
+	public function actionIndex()
+	{
+		echo json_encode(['code' => 200]);
+	}
 	public function actionTest()
 	{
 		// $sceneId = '1';

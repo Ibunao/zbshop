@@ -423,10 +423,10 @@ class WchatHelper extends Object
                         [
                             'name'=>urlencode('\\"趣\\"商城'),
                             'type'=>'miniprogram',
-                            // 备用路径
+                            // 备用网页路径
                             'url'=>'http://mp.weixin.qq.com/bizmall/mallshelf?id=&t=mall/list&biz=MzUyNTEyNDg3Mw==&shelf_id=1&showwxpaytitle=1#wechat_redirect',
                             "appid" => Yii::$app->params['xcxid'],
-                            "pagepath" => "pages/shelf/shelf",
+                            "pagepath" => "pages/index/index",
                         ],
                         [
                             'name'=>urlencode('加入我们'),

@@ -278,7 +278,7 @@
         "version_normalized": "1.3.2.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/bestiejs/punycode.js.git",
+            "url": "git@github.com:bestiejs/punycode.js.git",
             "reference": "38c8d3131a82567bfef18da09f7f4db68c84f8a3"
         },
         "dist": {
@@ -3800,5 +3800,65 @@
             "theme",
             "yii2"
         ]
+    },
+    {
+        "name": "phpoffice/phpexcel",
+        "version": "1.8.0",
+        "version_normalized": "1.8.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/PHPOffice/PHPExcel.git",
+            "reference": "e69a5e4d0ffa7fb6f171859e0a04346e580df30b"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://files.phpcomposer.com/files/PHPOffice/PHPExcel/e69a5e4d0ffa7fb6f171859e0a04346e580df30b.zip",
+            "reference": "e69a5e4d0ffa7fb6f171859e0a04346e580df30b",
+            "shasum": ""
+        },
+        "require": {
+            "ext-xml": "*",
+            "ext-xmlwriter": "*",
+            "php": ">=5.2.0"
+        },
+        "time": "2014-03-02T15:22:49+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "PHPExcel": "Classes/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "LGPL"
+        ],
+        "authors": [
+            {
+                "name": "Maarten Balliauw",
+                "homepage": "http://blog.maartenballiauw.be"
+            },
+            {
+                "name": "Mark Baker"
+            },
+            {
+                "name": "Franck Lefevre",
+                "homepage": "http://blog.rootslabs.net"
+            },
+            {
+                "name": "Erik Tilt"
+            }
+        ],
+        "description": "PHPExcel - OpenXML - Read, Create and Write Spreadsheet documents in PHP - Spreadsheet engine",
+        "homepage": "http://phpexcel.codeplex.com",
+        "keywords": [
+            "OpenXML",
+            "excel",
+            "php",
+            "spreadsheet",
+            "xls",
+            "xlsx"
+        ],
+        "abandoned": "phpoffice/phpspreadsheet"
     }
 ]
