@@ -41,3 +41,4 @@ wechat/config/params.php
 sftp-config.json
 backend/web/images/
 common/config/privacyparams.php
+backend/web/upload/excel/

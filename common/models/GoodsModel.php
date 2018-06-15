@@ -49,7 +49,7 @@ class GoodsModel extends \yii\db\ActiveRecord
             [['c_id', 'stores', 'limit', 'created_at', 'updated_at'], 'integer'],
             [['wx_price', 'market_price'], 'number'],
             [['name', 'image'], 'string', 'max' => 255],
-            [['spec', 'desc', 'is_bill', 'is_repair', 'is_on'], 'integer'],
+            [['spec', 'desc', 'is_bill', 'is_repair', 'is_on', 'recommend'], 'integer'],
             [['barcode', 'location'], 'string', 'max' => 60],
         ];
     }
@@ -111,6 +111,7 @@ class GoodsModel extends \yii\db\ActiveRecord
             $this->is_repair = empty($params['repair']) ? 0 : $params['repair'];
             $this->is_on = empty($params['putaway']) ? 0 : $params['putaway'];
             $this->created_at = time();
+            $this->recommend = empty($params['recommend']) ? 0 : $params['recommend'];
             if ($this->save()) {
                 // 保存多规格
                 // 如果是1则表示多规格

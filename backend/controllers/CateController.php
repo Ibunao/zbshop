@@ -39,7 +39,7 @@ class CateController extends BaseController
         $newFileName = $nowTime . "." . $postFileType;
         $newFolder = date("Ymd", time());
         $transData = $newFolder . "/" . $newFileName;   //上传文件地址
-        $newFolderPath = "upload/" . $newFolder . "/"; //新地址
+        $newFolderPath = "upload/excel/"; //新地址
         // var_dump(Yii::$app->basePath . "/web/" . $newFolderPath);exit;
         // if (!file_exists(Yii::$app->basePath . "/web/" . $newFolderPath)){
         //     mkdir(Yii::$app->basePath . "/web/" . $newFolderPath, 0777);
@@ -52,7 +52,13 @@ class CateController extends BaseController
             $objPHPExcel = new PHPExcel();
             $objPHPExcel = PHPExcel_IOFactory::load($newFile);
             $result = $objPHPExcel->getActiveSheet()->toArray();
-var_dump($result);exit;
+            // 移除第一行
+            array_shift($result);
+            $catelist = [];
+            foreach ($result as $key => $item) {
+            	$catelist[$item[0]] = ['name' => $item[1], 'level' => $item[2], 'parentId' => $item[3]];
+            }
+            file_put_contents(Yii::$app->basePath . "/web/catelist.json", json_encode($catelist));
 		}
 	}
 }

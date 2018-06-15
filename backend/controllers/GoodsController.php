@@ -85,7 +85,6 @@ class GoodsController extends BaseController
 					return $this->send(400, '添加失败');
 				}
 			}
-
 		}
 	}
 	/**

@@ -39,23 +39,32 @@
                             ['label' => '商品列表', 'icon' => 'file-code-o', 'url' => ['/goods/index'],],
                             ['label' => '添加商品', 'icon' => 'dashboard', 'url' => ['/goods/create'],],
                             ['label' => '分类设置', 'icon' => 'dashboard', 'url' => ['/cate/index'],],
-                            [
-                                'label' => '待添加',
-                                'icon' => 'circle-o',
-                                'url' => '#',
-                                'items' => [
-                                    ['label' => 'Level Two', 'icon' => 'circle-o', 'url' => '#',],
-                                    [
-                                        'label' => 'Level Two',
-                                        'icon' => 'dashboard',
-                                        'url' => '#',
-                                        'items' => [
-                                            ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
-                                            ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
-                                        ],
-                                    ],
-                                ],
-                            ],
+                            ['label' => '首页管理', 'icon' => 'dashboard', 'url' => ['/homepage/index'],],
+                            // [
+                            //     'label' => '待添加',
+                            //     'icon' => 'circle-o',
+                            //     'url' => '#',
+                            //     'items' => [
+                            //         ['label' => 'Level Two', 'icon' => 'circle-o', 'url' => '#',],
+                            //         [
+                            //             'label' => 'Level Two',
+                            //             'icon' => 'dashboard',
+                            //             'url' => '#',
+                            //             'items' => [
+                            //                 ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
+                            //                 ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
+                            //             ],
+                            //         ],
+                            //     ],
+                            // ],
+                        ],
+                    ],
+                    [
+                        'label' => '订单管理',
+                        'icon' => 'file-code-o',
+                        'url' => '#',
+                        'items' => [
+                            ['label' => '待添加', 'icon' => 'file-code-o', 'url' => ['#'],],
                         ],
                     ],
                     [
@@ -65,23 +74,23 @@
                         'items' => [
                             ['label' => '代理商审核', 'icon' => 'file-code-o', 'url' => ['/agent/index'],],
                             ['label' => '代理商用户', 'icon' => 'dashboard', 'url' => ['/customer/index'],],
-                            [
-                                'label' => '待添加',
-                                'icon' => 'circle-o',
-                                'url' => '#',
-                                'items' => [
-                                    ['label' => 'Level Two', 'icon' => 'circle-o', 'url' => '#',],
-                                    [
-                                        'label' => 'Level Two',
-                                        'icon' => 'circle-o',
-                                        'url' => '#',
-                                        'items' => [
-                                            ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
-                                            ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
-                                        ],
-                                    ],
-                                ],
-                            ],
+                            // [
+                            //     'label' => '待添加',
+                            //     'icon' => 'circle-o',
+                            //     'url' => '#',
+                            //     'items' => [
+                            //         ['label' => 'Level Two', 'icon' => 'circle-o', 'url' => '#',],
+                            //         [
+                            //             'label' => 'Level Two',
+                            //             'icon' => 'circle-o',
+                            //             'url' => '#',
+                            //             'items' => [
+                            //                 ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
+                            //                 ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
+                            //             ],
+                            //         ],
+                            //     ],
+                            // ],
                         ],
                     ],
                 ],

@@ -314,6 +314,15 @@ $this->title = '添加商品';
     <input type="radio" name="putaway" value="1" @click="putaway = 1"> 立即上架
   </label>
 </div>
+<div class="row form-inline">
+  <label class="col-sm-2 control-label" for="category">首页推荐</label>
+  <label class="radio-inline">
+    <input type="radio" name="recommend" value="0" @click="recommend = 0"> 否
+  </label>
+  <label class="radio-inline">
+    <input type="radio" name="recommend" value="1" @click="recommend = 1"> 推荐
+  </label>
+</div>
 <button type="button" class="btn btn-primary col-sm-offset-8" @click="submit">提交</button>
 </form>
 <?php $this->beginBlock('endbody'); ?>
@@ -357,7 +366,7 @@ var app = new Vue({
     bill:0,
     repair:0,
     putaway:0,
-    
+    recommend:0,
   },
   watch: {
 
