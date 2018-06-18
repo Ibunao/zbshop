@@ -27,7 +27,7 @@ class HomepageController extends BaseController
 			$temp = json_decode($model->data, true);
 			// var_dump($temp);exit;
 			foreach ($temp['carousel'] as $key => $item) {
-				$data['title'][] = ['id' => $key+1, 'img' => $item['pic']];
+				$data['title'][] = ['id' => $key+1, 'img' => $item['pic'], 'goodsId' => $item['goodsId']];
 			}
 			foreach ($temp['groups'] as $key => $item) {
 				$data['groups'][] = ['id' => $key+1, 'img' => $item['content'], 'gid' => $item['group'], 'textContent' => $item['textContent']];
@@ -48,7 +48,7 @@ class HomepageController extends BaseController
 		// var_dump($title, $groups, $catelist);exit;
 		$result = [];
 		foreach ($title as $key => $item) {
-			$result['carousel'][] = ['pic' => $item['img'], 'id' => $item['id']];
+			$result['carousel'][] = ['pic' => $item['img'], 'id' => $item['id'], 'goodsId' => $item['goodsId']];
 		}
 		foreach ($groups as $key => $item) {
 			$result['groups'][] = ['content' => $item['img'], 'textContent' => $item['textContent'], 'group' => $item['gid']];

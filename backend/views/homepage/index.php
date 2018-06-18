@@ -104,9 +104,10 @@ $this->title = '首页管理';
   	<label for="updateImg">更新图片</label>
     <input type="file" name="updateImg" class="btn btn-info" @change="uploadImg($event)">
   </div>
-  <div v-if="change.type == 'url'">
-    <label for="updateUrl" style="font-weight:bold;">更新Url</label>
-    <input type="text" name="updateUrl" class="form-control" v-model='change.url'>
+  <!-- 轮播关联商品id -->
+  <div v-if="change.type == 'title'">
+    <label for="updateText" style="font-weight:bold;">商品id</label>
+    <input type="text" name="updateText" class="form-control" v-model='change.goodsId'>
   </div>
   <div v-if="change.type == 'groups'">
     <label for="updateGroups" style="font-weight:bold;">更新分组</label>
@@ -194,6 +195,7 @@ var vm = new Vue({
       gName:'',
       cid:'',
       cName:'',
+      goodsId:'',
     },
     // 默认title图片
     title:[],
@@ -333,6 +335,9 @@ var vm = new Vue({
       	this.change.img = this[type][key].img;
       	this.change.name = '';
       }
+      if (type == 'title') {
+        this.change.goodsId = this[type][key].goodsId;
+      }
       if (type == 'catelist') {
       	this.change.name = this[type][key].name;
       	this.change.cid = this[type][key].cid;
@@ -345,7 +350,8 @@ var vm = new Vue({
     // 修改数据
     submitUpdate: function () {
     	if (this.change.type == 'title') {
-    		this.title[this.change.key].img = this.change.img;
+        this.title[this.change.key].img = this.change.img;
+    		this.title[this.change.key].goodsId = this.change.goodsId;
     	}
     	if (this.change.type == 'groups') {
     		this.groups[this.change.key].img = this.change.img;
