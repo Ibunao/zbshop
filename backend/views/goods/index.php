@@ -40,11 +40,39 @@ $this->params['breadcrumbs'][] = $this->title;
             //'location',
             //'is_bill',
             //'is_repair',
-            //'is_on',
+            [
+                'attribute' => 'is_on',
+                'label' => '上架状态',
+                'format' => 'raw',
+                'value' => function($model) {
+                    return $model->is_on == 0 ? '<span style = "color:red;">下架</span>' : '上架';
+                },
+                'filter' => [
+                    0 => '下架',
+                    1 => '上架'
+                ]
+            ],
             //'created_at',
             //'updated_at',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'class' => 'yii\grid\ActionColumn',
+                // 'template' => '{view} {delete}',
+                'template' => '{delete}',
+                'header' => '操作',
+                'buttons' => [
+                    // 'view' => function ($url, $model, $key) { 
+                    //     return Html::a('测试按钮', $url，['data-method' => 'post','data-pjax'=>'0']); 
+                    // },
+                    'delete'=> function ($url, $model, $key){
+                        $str = $model->is_on ? '下架' : '上架';
+                        return Html::a($str, ['delete', 'id'=>$model->id],[
+                            'data-method'=>'post',              //POST传值
+                            'data-confirm' => "确定{$str}该产品？", //添加确认框
+                        ] ) ;
+                    }
+                ],
+            ],
         ],
     ]); ?>
 </div>

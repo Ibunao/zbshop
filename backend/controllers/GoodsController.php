@@ -181,4 +181,27 @@ class GoodsController extends BaseController
 		}
 		return $this->send(400, '删除失败');
 	}
+	/**
+	 * 上/下架商品
+	 * @return [type] [description]
+	 */
+	public function actionDelete()
+	{
+		$goodsId = Yii::$app->request->get('id');
+		$model = GoodsModel::findOne($goodsId);
+		if ($model) {
+			if ($model->is_on == 0) {
+				$model->is_on = 1;
+			}else{
+				$model->is_on = 0;
+			}
+			if ($model->save()) {
+				var_dump('更改成功');exit;
+				// return true;
+			}
+			var_dump($model->errors);
+		}
+		var_dump('更改失败');
+		// return false;
+	}
 }

@@ -64,7 +64,7 @@
                         'icon' => 'file-code-o',
                         'url' => '#',
                         'items' => [
-                            ['label' => '待添加', 'icon' => 'file-code-o', 'url' => ['#'],],
+                            ['label' => '订单列表', 'icon' => 'file-code-o', 'url' => ['/orders/index'],],
                         ],
                     ],
                     [
