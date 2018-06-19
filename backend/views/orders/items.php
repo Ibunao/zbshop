@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="orders-model-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?= Html::encode('订单号：'.$this->title) ?></h1>
     <?= ListView::widget([
             'dataProvider' => $dataProvider,
             'itemView' => '_items',
