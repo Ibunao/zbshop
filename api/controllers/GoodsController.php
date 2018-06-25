@@ -20,10 +20,15 @@ class GoodsController extends BaseController
 		}
 		if ($type == 'all') {
 			return (new GoodsModel)->getGoods($page, [], $order);
-		}elseif ($type = 'group') {
-			return (new GoodsModel)->getGoods($page, ['gid' => $value], $order);
-		}elseif ($type = 'cat') {
-			return (new GoodsModel)->getGoods($page, ['c_id' => $value], $order);
+		}elseif ($type == 'groups') {
+			return (new GoodsModel)->getGoods($page, ['g_id' => $value], $order);
+		}elseif ($type == 'classify') {
+			$carr = Yii::$app->params['categories'];
+			$result = (new GoodsModel)->getCidArr($value, $carr);
+			$result[] = $value;
+			return (new GoodsModel)->getGoods($page, ['c_id' => $result], $order);
+		}elseif ($type == 'search') {
+			return (new GoodsModel)->getGoods($page, ['like', 'name', $value], $order);
 		}
 	}
 	public function actionGetGoodsInfo($gid)
@@ -40,5 +45,11 @@ class GoodsController extends BaseController
 	public function actionSetCart($goodsId, $num, $specId = '')
 	{
 		return ['code' => 200];
+	}
+	public function actionTest()
+	{
+		$carr = Yii::$app->params['categories'];
+		$result = (new GoodsModel)->getCidArr(1, $carr);
+		var_dump($result);exit;
 	}
 }

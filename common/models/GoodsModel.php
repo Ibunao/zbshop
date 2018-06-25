@@ -303,4 +303,21 @@ class GoodsModel extends \yii\db\ActiveRecord
         $resp['detailImg'] = $detailImg;
         return $resp;
     }
+    /**
+     * 通过cid 获取cid所有子分类id
+     * 
+     * @param  [type] $cid [description]
+     * @return [type]      [description]
+     */
+    private $data = [];
+    public function getCidArr($cid, $carr)
+    {
+        foreach ($carr as $key => $item) {
+            if ($item['parentId'] == $cid) {
+                $this->data[] = $key;
+                $this->getCidArr($key, $carr);
+            }
+        }
+        return $this->data;
+    }
 }

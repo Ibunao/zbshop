@@ -2,6 +2,7 @@
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/privacyparams.php',
+    require __DIR__ . '/../../common/config/params-catelist.php',// 更新分类后需要将backend/web下的catelist.json复制一份
     require __DIR__ . '/../../common/config/params-local.php',
     require __DIR__ . '/params.php'
 );
