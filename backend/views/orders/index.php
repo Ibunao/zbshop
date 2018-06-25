@@ -10,6 +10,11 @@ use yii\grid\GridView;
 $this->title = '订单列表';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<style type="text/css">
+    #w0{
+        overflow:scroll !important;
+    }
+</style>
 <div class="orders-model-index">
 
     <h1><?= Html::encode($this->title) ?></h1>

@@ -113,12 +113,13 @@ class OrderController extends BaseController
 	{
 		$request = Yii::$app->request;
 		$type = $request->post('type');
+		$openid = $request->post('openid');
 		if($type == 'daifa'){
-			$result = (new OrderModel)->daiInfo(['status' => 2, 'ship_status' => 0]);
+			$result = (new OrderModel)->daiInfo(['status' => 2, 'ship_status' => 0, 'openid' => $openid]);
 		} elseif ($type == 'daifu') {
 			$result = [];
 		} elseif ($type == 'daishou') {
-			$result = (new OrderModel)->daiInfo(['status' => 2, 'ship_status' => 1]);
+			$result = (new OrderModel)->daiInfo(['status' => 2, 'ship_status' => 1, 'openid' => $openid]);
 		} elseif ($type == 'daiping') {
 			$result = [];
 		// 所有

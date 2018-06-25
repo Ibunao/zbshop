@@ -228,6 +228,7 @@ class GoodsModel extends \yii\db\ActiveRecord
         $model = self::find()->select(['id', 'wx_price', 'image', 'name'])
             ->andWhere(['is_on' => 1]);
         if ($arr) {
+            $arr['is_on'] = 1;
             $model = $model->where($arr);
         }
         if (empty($order)) {
