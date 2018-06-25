@@ -157,7 +157,7 @@ class OrderModel extends \yii\db\ActiveRecord
         }
         $model = self::find()->where(['order_id' => $orderId, 'openid' => $openid])->one();
         $model->pay_id = $payId;
-        $model->status = $payPrice == $model->pay_price?2: ($payPrice == 1?2:4);
+        $model->status = $payPrice == $model->pay_price*100?2: ($payPrice == 1?2:4);
         $model->update_at = time();
         if ($model->save()) {
             if ($model->status == 2) {
@@ -181,7 +181,7 @@ class OrderModel extends \yii\db\ActiveRecord
                 // 加上支付成功赠送的积分
                 // 用户信息主表更新
                 // 测试时加10
-                $integrals = 10;floor($model->pay_price/100);
+                $integrals = floor($model->pay_price/100);
                 if ($integrals) {
                     $customer = CustomerModel::findOne(['openid1' => $openid]);
                     $old = $customer->integrals;
