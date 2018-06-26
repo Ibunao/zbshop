@@ -30,7 +30,6 @@ class OrderController extends BaseController
 		// 检查数据创建订单
 		$result = (new OrderModel)->setOrder($openid, $data);
 		if ($result) {
-			
 			return $this->send(200, 'success', ['orderid' => $result, 'data' => $data]);
 		}
 		return $this->send(400, 'fail');
@@ -46,7 +45,7 @@ class OrderController extends BaseController
 		$orderid = $request->post('orderid');
 		$orderInfo = (new OrderModel)->getOrderInfo($orderid);
 		$body = $orderInfo['order_id']; 
-		$total_fee = ((float) $orderInfo['pay_price'])*100;// 分钱
+		$total_fee = $orderInfo['pay_price']*100;// 分钱
 		if ($total_fee == 0) {
 			$total_fee = 1;// 最少支付一分钱
 		}

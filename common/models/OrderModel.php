@@ -269,7 +269,7 @@ class OrderModel extends \yii\db\ActiveRecord
         foreach ($goodsItem as $key => $item) {
             $temp[$item['orderid']]['items'][] = $item;
         }
-        sort($temp);
+        rsort($temp);
         return $temp;
     }
 }
