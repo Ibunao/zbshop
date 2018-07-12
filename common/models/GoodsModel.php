@@ -181,7 +181,7 @@ class GoodsModel extends \yii\db\ActiveRecord
                     if ($this->desc == 1) {
                         $arr[] = [$params['describeCont'], $this->id, 1];
                     }
-                    if ($this->desc == 2) {
+                    if ($this->desc == 2 && $params['describeCont']) {
                         foreach ($params['describeCont'] as $key => $value) {
                             $arr[] = [$value, $this->id, 2];
                         }
@@ -225,12 +225,11 @@ class GoodsModel extends \yii\db\ActiveRecord
     }
     public function getGoods($page, $arr = [], $order = [])
     {
-        $model = self::find()->select(['id', 'wx_price', 'image', 'name'])
-            ->andWhere(['is_on' => 1]);
-        if ($arr) {
-            $arr['is_on'] = 1;
-            $model = $model->where($arr);
-        }
+        $model = self::find()->select(['id', 'wx_price', 'image', 'name']);
+        // $arr['is_on'] = 1;
+
+        $model = $model->where($arr)->andWhere(['is_on' => 1]);
+ 
         if (empty($order)) {
             $model = $model->orderBy(['created_at' => SORT_DESC,]);
         }else{
@@ -266,6 +265,8 @@ class GoodsModel extends \yii\db\ActiveRecord
                 $specIds = explode(',', $item['s_v_ids']);
 
                 foreach ($spec as $key => $value) {
+                    $specIds[$key];
+                    $specValues[$key];
                     $specCheck[$value]['subModelName'][$specIds[$key]] = $specValues[$key];
                     $specCheck[$value]['name'] = $value;
                     $specCheck[$value]['value'] = $sids[$key];
@@ -278,7 +279,7 @@ class GoodsModel extends \yii\db\ActiveRecord
         }
         // 其他图片
         $otherImg = (new Query)->select(['value'])->from('shop_goods_others')
-            ->where(['g_id' => $gid])
+            ->where(['g_id' => $gid, 'type' => 3])
             ->column();
         $resp['otherImg'] = $otherImg;
         $result['specCheck'] = array_values($specCheck);

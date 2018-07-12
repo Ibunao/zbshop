@@ -94,6 +94,7 @@ class XcxController extends BaseController
 
 			$goods = GoodsModel::find()
 				->select(['id goodsId', 'wx_price', 'image', 'name'])
+				->where(['is_on' => 1])
 				->orderBy([
 				    'id' => SORT_DESC,
 				    'created_at' => SORT_DESC,

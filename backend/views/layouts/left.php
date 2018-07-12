@@ -40,6 +40,7 @@
                             ['label' => '添加商品', 'icon' => 'dashboard', 'url' => ['/goods/create'],],
                             ['label' => '分类设置', 'icon' => 'dashboard', 'url' => ['/cate/index'],],
                             ['label' => '首页管理', 'icon' => 'dashboard', 'url' => ['/homepage/index'],],
+                            ['label' => '更改库存', 'icon' => 'dashboard', 'url' => ['/product/index'],],
                             // [
                             //     'label' => '待添加',
                             //     'icon' => 'circle-o',
