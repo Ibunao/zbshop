@@ -56,6 +56,7 @@ class GoodsController extends BaseController
 	public function actionAddGoods()
 	{
 		if ($_POST) {
+			// var_dump($_POST['specSend'][66]);exit;
 			$params = $_POST;
 			$noError = true;
 			$error = [];

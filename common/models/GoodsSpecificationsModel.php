@@ -21,6 +21,7 @@ use Yii;
  */
 class GoodsSpecificationsModel extends \yii\db\ActiveRecord
 {
+    public $goods_name;
     /**
      * @inheritdoc
      */
@@ -36,15 +37,21 @@ class GoodsSpecificationsModel extends \yii\db\ActiveRecord
     {
         return [
             [['g_id', 's_v_ids', 'store'], 'required'],
-            [['g_id', 'barcode', 'store'], 'integer'],
+            [['g_id', 'store'], 'integer'],
             [['price'], 'number'],
-            [['sids'], 'string', 'max' => 30],
+            [['sids', 'barcode'], 'string', 'max' => 30],
             [['snames', 's_v_value', 's_v_ids'], 'string', 'max' => 255],
             [['image'], 'string', 'max' => 60],
             [['disabled'], 'string', 'max' => 3],
         ];
     }
-
+    /**
+     * 关联商品表
+     * @return [type] [description]
+     */
+    public function getGoods(){
+        return $this->hasOne(GoodsModel::className(),['id'=>'g_id']);
+    }
     /**
      * @inheritdoc
      */
