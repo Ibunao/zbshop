@@ -21,7 +21,7 @@ class GoodsController extends BaseController
 		if ($type == 'all') {
 			return (new GoodsModel)->getGoods($page, [], $order);
 		}elseif ($type == 'groups') {
-			return (new GoodsModel)->getGoods($page, ['g_id' => $value], $order);
+			return (new GoodsModel)->getGoods($page, "find_in_set({$value}, g_id)", $order);
 		}elseif ($type == 'classify') {
 			$carr = Yii::$app->params['categories'];
 			$result = (new GoodsModel)->getCidArr($value, $carr);

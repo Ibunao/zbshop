@@ -28,9 +28,7 @@ class BaseController extends Controller
 			$msg = '请求错误';
 		}
 		$result = ['code' => $code, 'msg' => $msg];
-		if ($other) {
-			$result['other'] = $other;
-		}
+		$result['other'] = $other;
 		return $result;
 	}
 }

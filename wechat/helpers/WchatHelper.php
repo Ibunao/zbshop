@@ -239,14 +239,27 @@ class WchatHelper extends Object
      */
     public function getToken()
     {
-        $access_token = Yii::$app->cache->get('wx_zhshop_access_token');
-        if(!$access_token){
+        // $access_token = Yii::$app->cache->get('wx_zhshop_access_token');
+        $result = Yii::$app->db->createCommand('SELECT token,time FROM wx_token WHERE id=1')
+           ->queryOne();
+        if (empty($result) || $result['time'] < time() - 7150) {
             $access_token_url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid='.
                 $this->wxconfig['zbshop']['app_id'].'&secret='.$this->wxconfig['zbshop']['app_secret'];
             $json_data = HttpHelper::httpCurl($access_token_url);
             $access_token = $json_data['access_token'];
-            $result = Yii::$app->cache->set('wx_zhshop_access_token', $access_token, 7200);
+            // $result = Yii::$app->cache->set('wx_zhshop_access_token', $access_token, 7200);
+            if (empty($result)) {
+                Yii::$app->db->createCommand()->insert('wx_token', [
+                    'token' => $access_token,
+                    'time' => time(),
+                ])->execute();
+            }else{
+                Yii::$app->db->createCommand()->update('wx_token', ['token' => $access_token, 'time' => time()], 'id = 1')->execute();
+            }
+        }else{
+            $access_token = $result['token'];
         }
+        
         // var_dump($access_token);
         return $access_token ;
     }
@@ -370,7 +383,7 @@ class WchatHelper extends Object
                         [
                             'name'=>urlencode('夏令营'),
                             'type'=>'view',
-                            'url'=>'http://mp.weixin.qq.com/mp/homepage?__biz=MzUyNTEyNDg3Mw==&hid=3&sn=019c6ece583139ea3158b156513dbffe&scene=18#wechat_redirect',
+                            'url'=>'https://mp.weixin.qq.com/mp/homepage?__biz=MzUyNTEyNDg3Mw%3D%3D&hid=9&sn=40f8ac6ade15e3e9edecdefa02ec2882',
                         ],
                         // 
                         [
@@ -382,7 +395,7 @@ class WchatHelper extends Object
                 ],
                 //第二个一级菜单
                 [
-                    'name'=>urlencode('冠赢扩展'),//这样防止转json中文会成\uxxx的形式
+                    'name'=>urlencode('冠赢拓展'),//这样防止转json中文会成\uxxx的形式
                     //定义子菜单
                     'sub_button'=>[
                         [
@@ -390,18 +403,18 @@ class WchatHelper extends Object
                             'type'=>'view',
                             'url'=>'http://mp.weixin.qq.com/mp/homepage?__biz=MzUyNTEyNDg3Mw==&hid=4&sn=bc0dbc7ac4f2e4791a8514b4b9f21588&scene=18#wechat_redirect',
                         ],
-                        // url跳转按钮
-                        [
-                            'name'=>urlencode('教练介绍'),
-                            'type'=>'view',
-                            'url'=>'http://mp.weixin.qq.com/mp/homepage?__biz=MzUyNTEyNDg3Mw==&hid=5&sn=9fc9a71e10f42087cd0a721c58842537&scene=18#wechat_redirect',
-                        ],
-                        // url跳转按钮
-                        [
-                            'name'=>urlencode('公司制定'),
-                            'type'=>'view',
-                            'url'=>'https://v.qq.com/x/page/x0546xexr9l.html',
-                        ],
+                        // // url跳转按钮
+                        // [
+                        //     'name'=>urlencode('教练介绍'),
+                        //     'type'=>'view',
+                        //     'url'=>'http://mp.weixin.qq.com/mp/homepage?__biz=MzUyNTEyNDg3Mw==&hid=5&sn=9fc9a71e10f42087cd0a721c58842537&scene=18#wechat_redirect',
+                        // ],
+                        // // url跳转按钮
+                        // [
+                        //     'name'=>urlencode('公司制定'),
+                        //     'type'=>'view',
+                        //     'url'=>'https://v.qq.com/x/page/x0546xexr9l.html',
+                        // ],
                     ]
                 ],
                 // 第三个一级菜单

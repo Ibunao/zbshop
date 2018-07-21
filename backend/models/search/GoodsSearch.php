@@ -80,7 +80,7 @@ class GoodsSearch extends GoodsModel
             ->andFilterWhere(['like', 'is_bill', $this->is_bill])
             ->andFilterWhere(['like', 'is_repair', $this->is_repair])
             ->andFilterWhere(['like', 'is_on', $this->is_on]);
-
+        $query->orderBy(['id' => SORT_DESC]);
         return $dataProvider;
     }
 }

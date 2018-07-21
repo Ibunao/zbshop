@@ -57,12 +57,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'ship_status',
                 'format' => 'raw',
                 'value' => function($model) {
-                    return $model->ship_status == 0 ? '未发货' : ($model->ship_status == 1 ? '已发货' : ($model->ship_status == 2 ? '确认收货' : ''));
+                    return $model->ship_status == 0 ? '未发货' : ($model->ship_status == 1 ? '已发货' : ($model->ship_status == 2 ? '确认收货' : ($model->ship_status == 3 ? '退货' : ($model->ship_status == 5 ? '完成退货' : ''))));
                 },
                 'filter' => [
+                    0 => '未发货',
                     1 => '已发货',
                     2 => '确认收货',
-                    0 => '未发货',
+                    3 => '退货',
+                    5 => '退货完成',
                 ]
             ],
             'ship_no',
