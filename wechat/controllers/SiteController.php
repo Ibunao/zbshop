@@ -66,17 +66,22 @@ class SiteController extends BaseController
      */
     public function actionSignup()
     {
-        // 如果已经
+        // 如果已经,不用这个了
         $agentId = Yii::$app->request->cookies->getValue('agentId');
-        if (!empty($agentId)) {
-            $agent = (new AgentUserModel())->findOne(['id' => $agentId]);
-            // 如果不是被拒绝
-            if ($agent->status != 3) {
-                $this->redirect('/site/join-us');
-            }
-        }
         // 获取openid
         $openid = (new WchatHelper)->getOpenid();
+        if (!empty($openid)) {
+            $agent = (new AgentUserModel())->findOne(['openid' => $openid]);
+            // 如果不是被拒绝
+            if (!empty($agent) && $agent->status == 2) {
+                // 把openid存入到cookie
+                $cookies = Yii::$app->response->cookies;
+                $cookie = new Cookie(['name' => 'agentId', 'value' => $agent->id]);
+                $cookies->add($cookie);
+                $this->redirect('/site/join-us');return;
+            }
+        }
+        
         // 如果已经注册过，则为更新数据
         if (!empty($openid)) {
             $model = (new AgentUserModel())->find()
@@ -95,7 +100,7 @@ class SiteController extends BaseController
                 $cookies = Yii::$app->response->cookies;
                 $cookie = new Cookie(['name' => 'agentId', 'value' => $user->id]);
                 $cookies->add($cookie);
-                $this->redirect('/site/join-us');
+                $this->redirect('/site/join-us');return;
                 // 暂时不写登陆功能
                 // if (Yii::$app->getUser()->login($user)) {
                     // return $this->redirect('/site/join-us');

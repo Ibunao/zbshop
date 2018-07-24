@@ -3,16 +3,16 @@
 namespace backend\controllers;
 
 use Yii;
-use common\models\GoodsSpecificationsModel;
-use backend\models\search\GoodsSpecificationsSearch;
+use common\models\WxOther;
+use backend\models\search\WxOtherSearch;
 use backend\controllers\bases\BaseController;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-
+use yii\web\UploadedFile;
 /**
- * ProductController implements the CRUD actions for GoodsSpecificationsModel model.
+ * WchatController implements the CRUD actions for WxOther model.
  */
-class ProductController extends BaseController
+class WchatController extends BaseController
 {
     /**
      * @inheritdoc
@@ -30,12 +30,12 @@ class ProductController extends BaseController
     }
 
     /**
-     * Lists all GoodsSpecificationsModel models.
+     * Lists all WxOther models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new GoodsSpecificationsSearch();
+        $searchModel = new WxOtherSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -45,8 +45,8 @@ class ProductController extends BaseController
     }
 
     /**
-     * Displays a single GoodsSpecificationsModel model.
-     * @param string $id
+     * Displays a single WxOther model.
+     * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -58,17 +58,29 @@ class ProductController extends BaseController
     }
 
     /**
-     * Creates a new GoodsSpecificationsModel model.
+     * Creates a new WxOther model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new GoodsSpecificationsModel();
+        $model = new WxOther();
+        if(Yii::$app->request->post()){
+        	$model->load(Yii::$app->request->post());
+            $model->imgFile = UploadedFile::getInstance($model, 'imgFile');
+            if($path = $model->upload()){
+                //文件上传成功
+                // var_dump($path);exit;
+                $model->img = $path;
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+                if($model->save(false)){
+                	return $this->redirect(['index']);
+                }
+            }
         }
+        // if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        //     return $this->redirect(['view', 'id' => $model->id]);
+        // }
 
         return $this->render('create', [
             'model' => $model,
@@ -76,21 +88,29 @@ class ProductController extends BaseController
     }
 
     /**
-     * Updates an existing GoodsSpecificationsModel model.
+     * Updates an existing WxOther model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
+     * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->barcode = (string) $model->barcode;
-        $model->disabled = (string) $model->disabled;
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['index', 'id' => $model->id]);
+
+        if(Yii::$app->request->post()){
+        	$model->load(Yii::$app->request->post());
+            $model->imgFile = UploadedFile::getInstance($model, 'imgFile');
+            if($path = $model->upload()){
+                //文件上传成功
+                // var_dump($path);exit;
+                $model->img = $path;
+
+                if($model->save(false)){
+                	return $this->redirect(['index']);
+                }
+            }
         }
-        // var_dump($model, $model->errors);exit;
 
         return $this->render('update', [
             'model' => $model,
@@ -98,9 +118,9 @@ class ProductController extends BaseController
     }
 
     /**
-     * Deletes an existing GoodsSpecificationsModel model.
+     * Deletes an existing WxOther model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param string $id
+     * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -112,15 +132,15 @@ class ProductController extends BaseController
     }
 
     /**
-     * Finds the GoodsSpecificationsModel model based on its primary key value.
+     * Finds the WxOther model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param string $id
-     * @return GoodsSpecificationsModel the loaded model
+     * @param integer $id
+     * @return WxOther the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = GoodsSpecificationsModel::findOne($id)) !== null) {
+        if (($model = WxOther::findOne($id)) !== null) {
             return $model;
         }
 
