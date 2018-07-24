@@ -32,7 +32,7 @@ class IntegralsModel extends \yii\db\ActiveRecord
         return [
             [['old', 'change', 'new', 'create_at'], 'integer'],
             [['change', 'new', 'create_at'], 'required'],
-            [['remark'], 'string', 'max' => 255],
+            [['remark', 'openid'], 'string', 'max' => 255],
         ];
     }
 

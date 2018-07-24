@@ -117,9 +117,10 @@ class CustomerModel extends \yii\db\ActiveRecord
         if (!$model) {
             return;
         }
+        $num = self::find()->where(['share_id' => $model->id])->count();
         $info['title'] = '恭喜，邀请成功!';
         $info['content'] = '二维码邀请';
-        $info['remark'] = '恭喜你，距亿万富翁又近一步';
+        $info['remark'] = '恭喜您又成功收录一名队员，您的队伍目前已收录'.$num.'名户外玩家';
         $info['openId'] = $model->openid;
         $info['url'] = '';
         if (!$success) {

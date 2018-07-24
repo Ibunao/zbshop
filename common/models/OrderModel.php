@@ -10,6 +10,7 @@ use common\models\IntegralsModel;
 use common\models\OrderItemsModel;
 use common\models\GoodsSpecificationsModel;
 use common\models\GoodsModel;
+use wechat\helpers\WchatHelper;
 /**
  * This is the model class for table "{{%order}}".
  *
@@ -170,6 +171,7 @@ class OrderModel extends \yii\db\ActiveRecord
                     $customer->updateCounters(['integrals' => -$useIntegrals]);
                     // 记录积分变动
                     $integralsModel = new IntegralsModel;
+                    $integralsModel->openid = $openid;
                     $integralsModel->old = $old;
                     $integralsModel->change = $useIntegrals;
                     $integralsModel->new = $old-$useIntegrals;
@@ -181,13 +183,14 @@ class OrderModel extends \yii\db\ActiveRecord
                 // 加上支付成功赠送的积分
                 // 用户信息主表更新
                 // 测试时加10
-                $integrals = floor($model->pay_price/100);
+                $integrals = floor($model->pay_price);
                 if ($integrals) {
                     $customer = CustomerModel::findOne(['openid1' => $openid]);
                     $old = $customer->integrals;
                     $customer->updateCounters(['integrals' => $integrals]);
                     // 记录积分变动
                     $integralsModel = new IntegralsModel;
+                    $integralsModel->openid = $openid;
                     $integralsModel->old = $old;
                     $integralsModel->change = $integrals;
                     $integralsModel->new = $old+$integrals;
@@ -213,12 +216,37 @@ class OrderModel extends \yii\db\ActiveRecord
                     $goods = (new GoodsModel)->findOne($gid);
                     $goods->updateCounters(['stores' => -$num]);
                 }
+
+                $this->sendMessage($openid, $model->pay_price);
             }
             Yii::$app->cache->set('xcx-wxnotify'.$orderId, true);
             return true;
         }
         var_dump($model->errors);
         return false;
+    }
+    /**
+     * 发送信息
+     * @param  [type] $openid [description]
+     * @return [type]         [description]
+     */
+    public function sendMessage($openid, $price)
+    {
+        $result = (new Query)->select(['u.openid', 'c.id'])->from('shop_customer c')
+            ->leftJoin('agent_user u', 'c.share_id = u.id')
+            ->where(['c.openid1' => $openid])
+            ->one();
+        var_dump($result);
+        $info['title'] = '会员消费通知';
+        $info['content'] = '你旗下的会员id为'.$result['id'].'消费了'.$price.'元';
+        $info['remark'] = '加油';
+        $info['openId'] = $result['openid'];
+        $info['url'] = '';
+        // 发送邀请成功通知。
+        $result = (new WchatHelper)->sendShareMessage($info);
+        var_dump($result);
+        Yii::trace($result);
+
     }
     /**
      * 获取用户的订单情况
@@ -235,12 +263,17 @@ class OrderModel extends \yii\db\ActiveRecord
         // 目前先只管代发货和确认收货的。
         foreach ($temp as $key => $item) {
             // 代发货
-            if ($item['status'] == 2) {
+            if ($item['status'] == 2 && $item['ship_status'] == 0) {
                 $result['daifa'] +=1;
             }
             // 待确认收货
-            if ($item['status'] == 5) {
+            if ($item['status'] == 2 && $item['ship_status'] == 1) {
                 $result['daishou'] +=1;
+            }
+            // 已完成
+            if ($item['status'] == 2 && ($item['ship_status'] == 2 || $item['ship_status'] == 3 || $item['ship_status'] == 5)) {
+                // $result['daiping'] +=1;
+                $result['daiping'] = 0;
             }
         }
         return $result;

@@ -61,7 +61,7 @@ class OrderSearch extends OrderModel
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'order_id' => $this->order_id,
+            // 'order_id' => $this->order_id,
             'price' => $this->price,
             'express_fee' => $this->express_fee,
             'integrals' => $this->integrals,
@@ -75,6 +75,7 @@ class OrderSearch extends OrderModel
 
         $query->andFilterWhere(['like', 'openid', $this->openid])
             ->andFilterWhere(['like', 'pay_id', $this->pay_id])
+            ->andFilterWhere(['like', 'order_id', $this->order_id])
             ->andFilterWhere(['like', 'ship_no', $this->ship_no])
             ->andFilterWhere(['like', 'ship_type', $this->ship_type])
             ->andFilterWhere(['like', 'remark', $this->remark])

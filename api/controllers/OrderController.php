@@ -120,11 +120,40 @@ class OrderController extends BaseController
 		} elseif ($type == 'daishou') {
 			$result = (new OrderModel)->daiInfo(['status' => 2, 'ship_status' => 1, 'openid' => $openid]);
 		} elseif ($type == 'daiping') {
-			$result = [];
+			// $result = [];
+			$result = (new OrderModel)->daiInfo(['status' => 2, 'ship_status' => [2, 3, 5], 'openid' => $openid]);
 		// 所有
 		} else {
 			$result = [];
 		}	
 		return $this->send(200, '', $result);
+	}
+	/**
+	 * 提交的按钮
+	 * @return [type] [description]
+	 */
+	public function actionDaibutton()
+	{
+		$request = Yii::$app->request;
+		$ship = $request->post('ship');
+		$status = $request->post('status');
+		$orderid = $request->post('orderid');
+		$model = OrderModel::findOne(['order_id' => $orderid]);
+		if (empty($model)) {
+			return $this->send(400, '没有此订单');
+		}
+		if ($ship == 1 && $status == 2) {
+			$model->ship_status = 2;
+			if ($model->save()) {
+				return $this->send(200, '确认成功');
+			}
+		}
+		if ($ship == 2 && $status == 2) {
+			$model->ship_status = 3;
+			if ($model->save()) {
+				return $this->send(200, '确认成功');
+			}
+		}
+		return $this->send(400, '确认失败');
 	}
 }
