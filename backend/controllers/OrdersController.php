@@ -5,7 +5,7 @@ namespace backend\controllers;
 use Yii;
 use common\models\OrderModel;
 use backend\models\search\OrderSearch;
-use yii\web\Controller;
+use backend\controllers\bases\BaseController;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\data\ActiveDataProvider;
@@ -15,7 +15,7 @@ use yii\db\Query;
 /**
  * OrdersController implements the CRUD actions for OrdersModel model.
  */
-class OrdersController extends Controller
+class OrdersController extends BaseController
 {
     /**
      * @inheritdoc

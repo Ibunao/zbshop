@@ -94,6 +94,14 @@
                             // ],
                         ],
                     ],
+                    [
+                        'label' => '其他管理',
+                        'icon' => 'share',
+                        'url' => '#',
+                        'items' => [
+                            ['label' => '图文消息', 'icon' => 'file-code-o', 'url' => ['/wchat/index'],],
+                        ],
+                    ],
                 ],
             ]
         ) ?>
