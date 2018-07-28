@@ -5,6 +5,7 @@ use yii\base\Object;
 use wechat\helpers\HttpHelper;
 use yii\web\Cookie;
 use common\models\CustomerModel;
+use common\models\WxOther;
 /**
  * 微信辅助
  */
@@ -96,7 +97,9 @@ class WchatHelper extends Object
         $event = strtolower($this->postObj->Event);
         switch ($event) {
             case 'subscribe'://关注的时候
-                $this->sendText('欢迎加入趣途文化！');
+                // $this->sendText('欢迎加入趣途文化！');
+                // 发送图文信息
+                $this->sendImageText();
                 // 扫场景二维码进来的
                 if ($this->postObj->EventKey) {
                     $index = strrpos($this->postObj->EventKey, '_');
@@ -146,6 +149,10 @@ class WchatHelper extends Object
      */
     private function sendImageText()
     {
+        $data = (new WxOther)->getItems();
+        if (empty($data)) {
+            $this->sendText('欢迎加入趣途文化！');return;
+        }
         //图文发送模板
         $newsTpl = "<xml>
                     <ToUserName><![CDATA[%s]]></ToUserName>
@@ -158,15 +165,16 @@ class WchatHelper extends Object
         //定义回复类型
         $msgType='news';
         //定义返回图文数量
-        $count = 1;
+        $count = count($data);
         //组装Articles节点信息
         $str = '<Articles>';
-        for($i=1;$i<=$count;$i++) {
+        foreach ($data as $key => $item) {
+            $item['img'] = Yii::$app->params['adminUrl'].$item['img'];
             $str .= "<item>
-                    <Title><![CDATA[ibunao{$i}]]></Title> 
-                    <Description><![CDATA[趣途文化]]></Description>
-                    <PicUrl><![CDATA[http://czbk888.duapp.com/images/{$i}.jpg]]></PicUrl>
-                    <Url><![CDATA[http://www.quutuu.com]]></Url>
+                    <Title><![CDATA[{$item['title']}]]></Title> 
+                    <Description><![CDATA[{$item['desc']}]]></Description>
+                    <PicUrl><![CDATA[{$item['img']}]]></PicUrl>
+                    <Url><![CDATA[{$item['url']}]]></Url>
                     </item>";
         }
         $str .= '</Articles>';
@@ -345,6 +353,7 @@ class WchatHelper extends Object
             $oauth2Url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={$appId}&secret={$appSecret}&code={$code}&grant_type=authorization_code";
 
             $oauth2 = HttpHelper::httpCurl($oauth2Url);
+            // var_dump($oauth2);exit;
             // 跳转
             if (!isset($oauth2['openid'])) {
                 return false;
@@ -395,14 +404,9 @@ class WchatHelper extends Object
                 ],
                 //第二个一级菜单
                 [
-                    'name'=>urlencode('冠赢拓展'),//这样防止转json中文会成\uxxx的形式
-                    //定义子菜单
-                    'sub_button'=>[
-                        [
-                            'name'=>urlencode('活动展示'),
-                            'type'=>'view',
-                            'url'=>'http://mp.weixin.qq.com/mp/homepage?__biz=MzUyNTEyNDg3Mw==&hid=4&sn=bc0dbc7ac4f2e4791a8514b4b9f21588&scene=18#wechat_redirect',
-                        ],
+                    'name'=>urlencode('免费漂流'),//这样防止转json中文会成\uxxx的形式
+                    'type'=>'view',
+                    'url'=>'http://wx.quutuu.com/site/get-openid',
                         // // url跳转按钮
                         // [
                         //     'name'=>urlencode('教练介绍'),
@@ -415,11 +419,10 @@ class WchatHelper extends Object
                         //     'type'=>'view',
                         //     'url'=>'https://v.qq.com/x/page/x0546xexr9l.html',
                         // ],
-                    ]
                 ],
                 // 第三个一级菜单
                 [
-                    'name'=>urlencode('趣途文化'),
+                    'name'=>urlencode('趣游途优'),
                     //定义子菜单
                     'sub_button'=>[
                         [
@@ -441,11 +444,11 @@ class WchatHelper extends Object
                             "appid" => Yii::$app->params['xcxid'],
                             "pagepath" => "pages/index/index",
                         ],
-                        [
-                            'name'=>urlencode('加入我们'),
-                            'type'=>'view',
-                            'url'=>'http://wx.quutuu.com/site/get-openid',
-                        ],
+                        // [
+                        //     'name'=>urlencode('加入我们'),
+                        //     'type'=>'view',
+                        //     'url'=>'http://wx.quutuu.com/site/get-openid',
+                        // ],
                     ]
                 ],
             ]

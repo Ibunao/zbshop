@@ -44,15 +44,24 @@ class AgentUserModel extends \yii\db\ActiveRecord
      */
     public function rules()
     {
+        // return [
+        //     [['age', 'created_at', 'updated_at', 'status'], 'integer'],
+        //     [['username', 'mobile', 'password', 'sex', 'password2', 'age', 'area', 'idcard_img1', 'idcard_img2', 'bankcard', 'bank'], 'required'],
+        //     [['username', 'password', 'area'], 'string', 'max' => 60],
+        //     [['mobile', 'bankcard'], 'string', 'max' => 30],
+        //     [['sex'], 'string', 'max' => 3],
+        //     [['idcard_img1', 'idcard_img2', 'bank', 'openid', 'unionid'], 'string', 'max' => 120],
+        //     // [['status'], 'string', 'max' => 4],
+        //     ['password2', 'compare', 'compareAttribute'=>'password'],
+        // ];
         return [
-            [['age', 'created_at', 'updated_at', 'status'], 'integer'],
-            [['username', 'mobile', 'password', 'sex', 'password2', 'age', 'area', 'idcard_img1', 'idcard_img2', 'bankcard', 'bank'], 'required'],
-            [['username', 'password', 'area'], 'string', 'max' => 60],
-            [['mobile', 'bankcard'], 'string', 'max' => 30],
-            [['sex'], 'string', 'max' => 3],
-            [['idcard_img1', 'idcard_img2', 'bank', 'openid', 'unionid'], 'string', 'max' => 120],
+            [['created_at', 'updated_at', 'status'], 'integer'],
+            [['username', 'mobile','area'], 'required'],
+            [['password', 'sex', 'password2', 'age', 'idcard_img1', 'idcard_img2', 'bankcard', 'bank'], 'safe'],
+            [['username', 'area'], 'string', 'max' => 60],
+            [['mobile'], 'string', 'max' => 30],
+            [['openid', 'unionid'], 'string', 'max' => 120],
             // [['status'], 'string', 'max' => 4],
-            ['password2', 'compare', 'compareAttribute'=>'password'],
         ];
     }
 
@@ -75,7 +84,7 @@ class AgentUserModel extends \yii\db\ActiveRecord
             'idcard_imgb' => '身份证反面图片',
             'bankcard' => '银行卡号',
             'bank' => '开户行',
-            'area' => '代理区间',
+            'area' => '区间',
             'status' => 'Status',
             'openid' => 'Openid',
             'unionid' => 'Unionid',
