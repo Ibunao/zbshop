@@ -37,6 +37,7 @@
 					img.attr('src', data.imgUrl);
 					img.prependTo($('.container')[0]);
 					$('.wrap').css({"background-image":"url(/images/helpers/dailibeijing.jpg)", "background-repeat":"no-repeat", "background-size":"100% 100%","-moz-background-size":"100% 100%"})
+					$('#jionus').hide();
 					// $('<b style="width:130px" class="center-block" >长按图片保存到本地</b>').replaceAll(".align-center");
 	  			}else{
 	  				alert('获取失败，请公众号内留言反馈');

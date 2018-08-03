@@ -404,14 +404,9 @@ class WchatHelper extends Object
                 ],
                 //第二个一级菜单
                 [
-                    'name'=>urlencode('冠赢拓展'),//这样防止转json中文会成\uxxx的形式
-                    //定义子菜单
-                    'sub_button'=>[
-                        [
-                            'name'=>urlencode('活动展示'),
-                            'type'=>'view',
-                            'url'=>'http://mp.weixin.qq.com/mp/homepage?__biz=MzUyNTEyNDg3Mw==&hid=4&sn=bc0dbc7ac4f2e4791a8514b4b9f21588&scene=18#wechat_redirect',
-                        ],
+                    'name'=>urlencode('免费漂流'),//这样防止转json中文会成\uxxx的形式
+                    'type'=>'view',
+                    'url'=>'http://wx.quutuu.com/site/get-openid',
                         // // url跳转按钮
                         // [
                         //     'name'=>urlencode('教练介绍'),
@@ -424,11 +419,10 @@ class WchatHelper extends Object
                         //     'type'=>'view',
                         //     'url'=>'https://v.qq.com/x/page/x0546xexr9l.html',
                         // ],
-                    ]
                 ],
                 // 第三个一级菜单
                 [
-                    'name'=>urlencode('趣途文化'),
+                    'name'=>urlencode('趣游途优'),
                     //定义子菜单
                     'sub_button'=>[
                         [
@@ -450,11 +444,11 @@ class WchatHelper extends Object
                             "appid" => Yii::$app->params['xcxid'],
                             "pagepath" => "pages/index/index",
                         ],
-                        [
-                            'name'=>urlencode('加入我们'),
-                            'type'=>'view',
-                            'url'=>'http://wx.quutuu.com/site/get-openid',
-                        ],
+                        // [
+                        //     'name'=>urlencode('加入我们'),
+                        //     'type'=>'view',
+                        //     'url'=>'http://wx.quutuu.com/site/get-openid',
+                        // ],
                     ]
                 ],
             ]
