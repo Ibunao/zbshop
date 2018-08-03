@@ -323,6 +323,17 @@ $this->title = '添加商品';
     <input type="radio" name="recommend" value="1" @click="recommend = 1"> 推荐
   </label>
 </div>
+<div class="row">
+   <label class="col-sm-2 control-label" for="daili">选择代理</label>
+   <div class="col-sm-3">
+     <select name="daili" id="daili" class="selectpicker show-tick form-control"  data-width="98%" data-first-option="true" title='请选择所属代理' required data-live-search="true" v-model="daili">
+      <!-- <option value="0">请选择商品分类</option> -->
+      <?php foreach ($daili as $key => $value): ?>
+          <option value="<?=$key ;?>"><?=$value ;?></option>
+      <?php endforeach ?>
+     </select>
+   </div>
+  </div>
 <button type="button" class="btn btn-primary col-sm-offset-8" @click="submit">提交</button>
 </form>
 <?php $this->beginBlock('endbody'); ?>
@@ -367,6 +378,7 @@ var app = new Vue({
     repair:0,
     putaway:0,
     recommend:0,
+    daili:'',
   },
   watch: {
 

@@ -127,4 +127,23 @@ class AgentUserModel extends \yii\db\ActiveRecord
         }
         return [];
     }
+    /**
+     * 获取所有代理商名字和openid
+     * @return [type] [description]
+     */
+    public static function getAgentsOpenid()
+    {
+        $result = AgentUserModel::find()
+            ->select(['username', 'openid'])
+            ->asArray()
+            ->indexBy('openid')
+            ->all();
+        if ($result) {
+            foreach ($result as $key => $value) {
+                $result[$key] = $value['username'];
+            }
+            return $result;
+        }
+        return [];
+    }
 }

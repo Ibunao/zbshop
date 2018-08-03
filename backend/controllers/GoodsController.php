@@ -7,6 +7,7 @@ use common\models\AttributesModel;
 use common\models\GroupsModel;
 use common\models\GoodsModel;
 use common\models\SpecModel;
+use common\models\AgentUserModel;
 use app\models\search\GoodsSearch;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -50,8 +51,9 @@ class GoodsController extends BaseController
 		$groups = (new GroupsModel)->getGroups();
 		// json_encode的时候去掉索引
 		sort($groups);
+		$daili = (new AgentUserModel)->getAgentsOpenid();
 		// return $this->render('create', ['groups' =>$groups]);
-		return $this->render('vuecreate', ['groups' =>$groups]);
+		return $this->render('vuecreate', ['groups' =>$groups, 'daili' => $daili]);
 	}
 	public function actionAddGoods()
 	{
