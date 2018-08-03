@@ -19,7 +19,7 @@ class WxOtherSearch extends WxOther
     {
         return [
             [['id'], 'integer'],
-            [['url', 'img'], 'safe'],
+            [['url', 'img', 'title', 'desc'], 'safe'],
         ];
     }
 

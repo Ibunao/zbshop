@@ -108,7 +108,7 @@ class SiteController extends BaseController
             }
         }
 
-        return $this->render('signup', [
+        return $this->render('signup1', [
             'model' => $model,
         ]);
     }

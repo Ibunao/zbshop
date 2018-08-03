@@ -180,24 +180,24 @@ class OrderModel extends \yii\db\ActiveRecord
                     $integralsModel->save();
                 }
                 
-                // 加上支付成功赠送的积分
-                // 用户信息主表更新
-                // 测试时加10
-                $integrals = floor($model->pay_price);
-                if ($integrals) {
-                    $customer = CustomerModel::findOne(['openid1' => $openid]);
-                    $old = $customer->integrals;
-                    $customer->updateCounters(['integrals' => $integrals]);
-                    // 记录积分变动
-                    $integralsModel = new IntegralsModel;
-                    $integralsModel->openid = $openid;
-                    $integralsModel->old = $old;
-                    $integralsModel->change = $integrals;
-                    $integralsModel->new = $old+$integrals;
-                    $integralsModel->remark = '支付成功赠送积分';
-                    $integralsModel->create_at = time();
-                    $integralsModel->save();
-                }
+                // // 加上支付成功赠送的积分
+                // // 用户信息主表更新
+                // // 测试时加10
+                // $integrals = floor($model->pay_price);
+                // if ($integrals) {
+                //     $customer = CustomerModel::findOne(['openid1' => $openid]);
+                //     $old = $customer->integrals;
+                //     $customer->updateCounters(['integrals' => $integrals]);
+                //     // 记录积分变动
+                //     $integralsModel = new IntegralsModel;
+                //     $integralsModel->openid = $openid;
+                //     $integralsModel->old = $old;
+                //     $integralsModel->change = $integrals;
+                //     $integralsModel->new = $old+$integrals;
+                //     $integralsModel->remark = '支付成功赠送积分';
+                //     $integralsModel->create_at = time();
+                //     $integralsModel->save();
+                // }
                 // 库存
                 $items = (new OrderItemsModel)->find()->select(['goodsid', 'specid', 'num'])->where(['orderid' => $orderId])->asArray()->all();
                 $goods = [];
@@ -232,13 +232,14 @@ class OrderModel extends \yii\db\ActiveRecord
      */
     public function sendMessage($openid, $price)
     {
-        $result = (new Query)->select(['u.openid', 'c.id'])->from('shop_customer c')
+        $result = (new Query)->select(['u.openid', 'c.id', 'u.username'])->from('shop_customer c')
             ->leftJoin('agent_user u', 'c.share_id = u.id')
             ->where(['c.openid1' => $openid])
             ->one();
-        var_dump($result);
+        // var_dump($result);
+        $name = mb_substr($result['username'], 0, 1);
         $info['title'] = '会员消费通知';
-        $info['content'] = '你旗下的会员id为'.$result['id'].'消费了'.$price.'元';
+        $info['content'] = '尊敬的  '.$name.'  先生/女士，您旗下的会员id为'.$result['id'].'消费了'.$price.'元';
         $info['remark'] = '加油';
         $info['openId'] = $result['openid'];
         $info['url'] = '';

@@ -5,6 +5,7 @@ use yii\base\Object;
 use wechat\helpers\HttpHelper;
 use yii\web\Cookie;
 use common\models\CustomerModel;
+use common\models\WxOther;
 /**
  * 微信辅助
  */
@@ -96,9 +97,9 @@ class WchatHelper extends Object
         $event = strtolower($this->postObj->Event);
         switch ($event) {
             case 'subscribe'://关注的时候
-                $this->sendText('欢迎加入趣途文化！');
+                // $this->sendText('欢迎加入趣途文化！');
                 // 发送图文信息
-                // $this->sendImageText();
+                $this->sendImageText();
                 // 扫场景二维码进来的
                 if ($this->postObj->EventKey) {
                     $index = strrpos($this->postObj->EventKey, '_');
@@ -148,6 +149,10 @@ class WchatHelper extends Object
      */
     private function sendImageText()
     {
+        $data = (new WxOther)->getItems();
+        if (empty($data)) {
+            $this->sendText('欢迎加入趣途文化！');return;
+        }
         //图文发送模板
         $newsTpl = "<xml>
                     <ToUserName><![CDATA[%s]]></ToUserName>
@@ -160,15 +165,16 @@ class WchatHelper extends Object
         //定义回复类型
         $msgType='news';
         //定义返回图文数量
-        $count = 3;
+        $count = count($data);
         //组装Articles节点信息
         $str = '<Articles>';
-        for($i=1;$i<=$count;$i++) {
+        foreach ($data as $key => $item) {
+            $item['img'] = Yii::$app->params['adminUrl'].$item['img'];
             $str .= "<item>
-                    <Title><![CDATA[ibunao{$i}]]></Title> 
-                    <Description><![CDATA[趣途文化]]></Description>
-                    <PicUrl><![CDATA[http://czbk888.duapp.com/images/{$i}.jpg]]></PicUrl>
-                    <Url><![CDATA[http://www.quutuu.com]]></Url>
+                    <Title><![CDATA[{$item['title']}]]></Title> 
+                    <Description><![CDATA[{$item['desc']}]]></Description>
+                    <PicUrl><![CDATA[{$item['img']}]]></PicUrl>
+                    <Url><![CDATA[{$item['url']}]]></Url>
                     </item>";
         }
         $str .= '</Articles>';
