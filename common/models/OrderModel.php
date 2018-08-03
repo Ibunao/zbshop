@@ -263,12 +263,10 @@ class OrderModel extends \yii\db\ActiveRecord
         $result = (new Query)->select('bind_openid openid')->from('shop_goods')
             ->where(['id' => $goodsIds])
             ->all();
-        $date = date("Y-m-d H:i:s");
         foreach ($result as $user) {
             if (!empty($user['openid'])) {
                 $info['title'] = '顾客核销通知';
-                $info['content'] = '服务类型：顾客x，成功消费了一笔您旗下的产品，预定号码为：'.$mobile;
-                $info['remark'] = '完成时间:'.$date;
+                $info['content'] = '有顾客成功消费了一笔您旗下的产品，预定号码为：'.$mobile;
                 $info['openId'] = $user['openid'];
                 $info['url'] = '';
                 // 发送邀请成功通知。
