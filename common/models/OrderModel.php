@@ -216,7 +216,7 @@ class OrderModel extends \yii\db\ActiveRecord
                     $goods = (new GoodsModel)->findOne($gid);
                     $goods->updateCounters(['stores' => -$num]);
                 }
-
+                
                 $this->sendMessage($openid, $model->pay_price);
                 $this->sendMessageToDaili($items, $model->mobile);
             }
@@ -267,6 +267,7 @@ class OrderModel extends \yii\db\ActiveRecord
             if (!empty($user['openid'])) {
                 $info['title'] = '顾客核销通知';
                 $info['content'] = '有顾客成功消费了一笔您旗下的产品，预定号码为：'.$mobile;
+                $info['remark'] = '';
                 $info['openId'] = $user['openid'];
                 $info['url'] = '';
                 // 发送邀请成功通知。
