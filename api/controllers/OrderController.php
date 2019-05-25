@@ -142,12 +142,31 @@ class OrderController extends BaseController
 		if (empty($model)) {
 			return $this->send(400, '没有此订单');
 		}
+		// 确认收货
 		if ($ship == 1 && $status == 2) {
 			$model->ship_status = 2;
+			// 确认收货增加积分
+	        // 用户信息主表更新
+	        $integrals = floor($model->pay_price);
+	        if ($integrals) {
+	            $customer = CustomerModel::findOne(['openid1' => $model->openid]);
+	            $old = $customer->integrals;
+	            $customer->updateCounters(['integrals' => $integrals]);
+	            // 记录积分变动
+	            $integralsModel = new IntegralsModel;
+	            $integralsModel->openid = $model->openid;
+	            $integralsModel->old = $old;
+	            $integralsModel->change = $integrals;
+	            $integralsModel->new = $old+$integrals;
+	            $integralsModel->remark = '确认收货赠送积分';
+	            $integralsModel->create_at = time();
+	            $integralsModel->save();
+	        }
 			if ($model->save()) {
 				return $this->send(200, '确认成功');
 			}
 		}
+		// 申请退款
 		if ($ship == 2 && $status == 2) {
 			$model->ship_status = 3;
 			if ($model->save()) {

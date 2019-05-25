@@ -180,24 +180,24 @@ class OrderModel extends \yii\db\ActiveRecord
                     $integralsModel->save();
                 }
                 
-                // 加上支付成功赠送的积分
-                // 用户信息主表更新
-                // 测试时加10
-                $integrals = floor($model->pay_price);
-                if ($integrals) {
-                    $customer = CustomerModel::findOne(['openid1' => $openid]);
-                    $old = $customer->integrals;
-                    $customer->updateCounters(['integrals' => $integrals]);
-                    // 记录积分变动
-                    $integralsModel = new IntegralsModel;
-                    $integralsModel->openid = $openid;
-                    $integralsModel->old = $old;
-                    $integralsModel->change = $integrals;
-                    $integralsModel->new = $old+$integrals;
-                    $integralsModel->remark = '支付成功赠送积分';
-                    $integralsModel->create_at = time();
-                    $integralsModel->save();
-                }
+                // // 加上支付成功赠送的积分
+                // // 用户信息主表更新
+                // // 测试时加10
+                // $integrals = floor($model->pay_price);
+                // if ($integrals) {
+                //     $customer = CustomerModel::findOne(['openid1' => $openid]);
+                //     $old = $customer->integrals;
+                //     $customer->updateCounters(['integrals' => $integrals]);
+                //     // 记录积分变动
+                //     $integralsModel = new IntegralsModel;
+                //     $integralsModel->openid = $openid;
+                //     $integralsModel->old = $old;
+                //     $integralsModel->change = $integrals;
+                //     $integralsModel->new = $old+$integrals;
+                //     $integralsModel->remark = '支付成功赠送积分';
+                //     $integralsModel->create_at = time();
+                //     $integralsModel->save();
+                // }
                 // 库存
                 $items = (new OrderItemsModel)->find()->select(['goodsid', 'specid', 'num'])->where(['orderid' => $orderId])->asArray()->all();
                 $goods = [];
