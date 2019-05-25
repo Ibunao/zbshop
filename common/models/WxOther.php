@@ -31,7 +31,7 @@ class WxOther extends \yii\db\ActiveRecord
         return [
             [['url'], 'required'],
             [['id'], 'integer'],
-            [['url', 'img'], 'string', 'max' => 255],
+            [['url', 'img', 'title', 'desc'], 'string', 'max' => 255],
             [['order'], 'integer'],
             [['imgFile'], 'file', 'skipOnEmpty' => false, 'extensions' => 'png, jpg'],
         ];
@@ -60,6 +60,7 @@ class WxOther extends \yii\db\ActiveRecord
      */
     public function getItems()
     {
-        
+        $result = self::find()->orderBy('order')->asArray()->all();
+        return $result;
     }
 }

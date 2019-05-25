@@ -146,4 +146,9 @@ class WchatController extends BaseController
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+    public function actionTest()
+    {
+    	$data = (new WxOtherSearch)->getItems();
+    	var_dump($data);exit;
+    }
 }

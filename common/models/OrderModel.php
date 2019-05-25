@@ -199,7 +199,7 @@ class OrderModel extends \yii\db\ActiveRecord
                 //     $integralsModel->save();
                 // }
                 // 库存
-                $items = (new OrderItemsModel)->find()->select(['goodsid', 'specid', 'num'])->where(['orderid' => $orderId])->asArray()->all();
+                $items = (new OrderItemsModel)->find()->select(['goodsid', 'specid', 'num', 'specvalue'])->where(['orderid' => $orderId])->asArray()->all();
                 $goods = [];
                 foreach ($items as $key => $item) {
                     if (!isset($goods[$item['goodsid']])) {
@@ -216,8 +216,9 @@ class OrderModel extends \yii\db\ActiveRecord
                     $goods = (new GoodsModel)->findOne($gid);
                     $goods->updateCounters(['stores' => -$num]);
                 }
-
+                
                 $this->sendMessage($openid, $model->pay_price);
+                $this->sendMessageToDaili($items, $model->mobile);
             }
             Yii::$app->cache->set('xcx-wxnotify'.$orderId, true);
             return true;
@@ -232,13 +233,14 @@ class OrderModel extends \yii\db\ActiveRecord
      */
     public function sendMessage($openid, $price)
     {
-        $result = (new Query)->select(['u.openid', 'c.id'])->from('shop_customer c')
+        $result = (new Query)->select(['u.openid', 'c.id', 'u.username'])->from('shop_customer c')
             ->leftJoin('agent_user u', 'c.share_id = u.id')
             ->where(['c.openid1' => $openid])
             ->one();
-        var_dump($result);
+        // var_dump($result);
+        $name = mb_substr($result['username'], 0, 1);
         $info['title'] = '会员消费通知';
-        $info['content'] = '你旗下的会员id为'.$result['id'].'消费了'.$price.'元';
+        $info['content'] = '尊敬的  '.$name.'  先生/女士，您旗下的会员id为'.$result['id'].'消费了'.$price.'元';
         $info['remark'] = '加油';
         $info['openId'] = $result['openid'];
         $info['url'] = '';
@@ -247,6 +249,31 @@ class OrderModel extends \yii\db\ActiveRecord
         var_dump($result);
         Yii::trace($result);
 
+    }
+    /**
+     * 给供货商发送信息
+     * @return [type] [description]
+     */
+    public function sendMessageToDaili($items, $mobile)
+    {
+        $goodsIds = [];
+        foreach ($items as $key => $item) {
+            $goodsIds[] = $item['goodsid'];
+        }
+        $result = (new Query)->select('bind_openid openid')->from('shop_goods')
+            ->where(['id' => $goodsIds])
+            ->all();
+        foreach ($result as $user) {
+            if (!empty($user['openid'])) {
+                $info['title'] = '顾客核销通知';
+                $info['content'] = '有顾客成功消费了一笔您旗下的产品，预定号码为：'.$mobile;
+                $info['remark'] = '';
+                $info['openId'] = $user['openid'];
+                $info['url'] = '';
+                // 发送邀请成功通知。
+                $result = (new WchatHelper)->sendShareMessage($info);
+            }
+        }
     }
     /**
      * 获取用户的订单情况

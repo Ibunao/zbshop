@@ -8,6 +8,8 @@ use common\helpers\HttpHelper;
 use common\helpers\WxPay;
 use common\models\TempModel;
 use common\models\OrderModel;
+use common\models\CustomerModel;
+use common\models\IntegralsModel;
 /**
  * 订单类
  * Site controller

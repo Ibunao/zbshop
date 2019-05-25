@@ -51,6 +51,7 @@ class GoodsModel extends \yii\db\ActiveRecord
             [['name', 'image'], 'string', 'max' => 255],
             [['spec', 'desc', 'is_bill', 'is_repair', 'is_on', 'recommend'], 'integer'],
             [['barcode', 'location'], 'string', 'max' => 60],
+            [['bind_openid'], 'safe'],
         ];
     }
 
@@ -112,6 +113,7 @@ class GoodsModel extends \yii\db\ActiveRecord
             $this->is_on = empty($params['putaway']) ? 0 : $params['putaway'];
             $this->created_at = time();
             $this->recommend = empty($params['recommend']) ? 0 : $params['recommend'];
+            $this->bind_openid = empty($params['daili']) ? '' : $params['daili'];
             if ($this->save()) {
                 // 保存多规格
                 // 如果是1则表示多规格
